@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-. "$ETROBO_ROOT/scripts/etrobopath.sh" unset
-git "$@"
