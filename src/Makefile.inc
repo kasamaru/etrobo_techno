@@ -24,5 +24,12 @@ endif
 APPL_DIRS += $(mkfile_path)app $(mkfile_path)unit
 
 INCLUDES += \
-	-I$(mkfile_path)app \
-	-I$(mkfile_path)unit
+	-I$(mkfile_path)right \
+	-I$(mkfile_path)right/app \
+	-I$(mkfile_path)right/mid \
+	-I$(mkfile_path)left \
+	-I$(mkfile_path)left/app \
+	-I$(mkfile_path)left/mid \
+	-I$(mkfile_path)common
+	-I$(mkfile_path)common/app \
+	-I$(mkfile_path)common/mid \
