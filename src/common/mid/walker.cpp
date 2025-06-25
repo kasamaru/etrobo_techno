@@ -18,8 +18,8 @@ Walker::Walker():
  * @note 前進する制限時間は、呼び元で管理すること
  */
 void Walker::runForward(WORD rightPWM, WORD leftPWM) {
-    leftWheel.setPower(leftWheel);
-    rightWheel.setPower(rightWheel);
+    leftWheel.setPower(leftPWM);
+    rightWheel.setPower(rightPWM);
 }
 
 /**

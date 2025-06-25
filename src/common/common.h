@@ -1,5 +1,9 @@
+
+#pragma once
 #include <cstdint>
 #include <cstring>
+#include "mid/colorSense.h"
+#include "mid/Walker.h"
 using SBYTE = int8_t;
 using BYTE = uint8_t;
 
