@@ -1,57 +1,99 @@
 #include <stdio.h>
 
+/* TODO: ファイル名がよくないので変更、技術教育ならLineMonitorになっている */
 #include "colorSense.h"
 
 void ColorSense::ColorSense():
     frontColorSense(EPort::PORT_C){
 }
 
-WORD getApproximateHSV_H(void) {
+/**
+ * @brief 近似色相取得
+ */
+WORD ColorSense::getApproximateHSV_H(void) {
     return p_ApproximateHSV.H;
 }
-BYTE getApproximateHSV_S(void) {
+
+/**
+ * @brief 近似彩度取得
+ */
+BYTE ColorSense::getApproximateHSV_S(void) {
     return p_ApproximateHSV.S;
 }
-BYTE getApproximateHSV_V(void) {
+
+/**
+ * @brief 近似明度取得
+ */
+BYTE ColorSense::getApproximateHSV_V(void) {
     return p_ApproximateHSV.V;
 }
-WORD getProximateHSV_H(void) {
+
+/**
+ * @brief 近似なし色相取得
+ */
+WORD ColorSense::getProximateHSV_H(void) {
     return p_ProximateHSV.H;
 }
-BYTE getProximateHSV_S(void) {
+
+/**
+ * @brief 近似なし彩度取得
+ */
+BYTE ColorSense::getProximateHSV_S(void) {
     return p_ProximateHSV.S;
 }
-BYTE getProximateHSV_V(void) {
+
+/**
+ * @brief 近似なし明度取得
+ */
+BYTE ColorSense::getProximateHSV_V(void) {
     return p_ProximateHSV.V;
 }
-WORD getRGB_R(void) {
+
+/**
+ * @brief R値取得
+ */
+WORD ColorSense::getRGB_R(void) {
     return p_RGB.R;
 }
-WORD getRGB_G(void) {
+
+/**
+ * @brief G値取得
+ */
+WORD ColorSense::getRGB_G(void) {
     return p_RGB.G;
 }
-WORD getRGB_B(void) {
+
+/**
+ * @brief B値取得
+ */
+WORD ColorSense::getRGB_B(void) {
     return p_RGB.B;
 }
 
-void getRGB(RGB* rgb) {
+/**
+ * @brief RGB値のコピー
+ */
+void cpyRGB(RGB* rgb) {
     std::memcpy(rgb, &(p_RGB), sizeof(p_RGB)/sizeof(WORD));
 }
 
-void getProximateHSV(HSV* hsv) {
+void cpyProximateHSV(HSV* hsv) {
     std::memcpy(hsv, &(p_ProximateHSV), sizeof(p_ProximateHSV)/sizeof(WORD));
 }
 
-void getApproximateHSV(HSV* hsv) {
+void cpyApproximateHSV(HSV* hsv) {
     std::memcpy(hsv, &(p_ApproximateHSV), sizeof(p_ApproximateHSV)/sizeof(WORD));
 }
 
 void p_setRgb(void) {
     frontColorSense.getRGB(&p_RGB);
+    cpyRGB(&p_RGB);
 }
 void p_setHSV(void) {
     frontColorSense.getHSV(&p_ProximateHSV);
+    cpyProximateHSV(&p_ProximateHSV);
 }
 void p_setColor(void) {
     frontColorSense.getColor(&p_ApproximateHSV);
+    cpyApproximateHSV()
 }

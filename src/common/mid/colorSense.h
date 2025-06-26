@@ -18,14 +18,14 @@ class ColorSense {
     WORD getRGB_B(void);
     
     private:
-    ColorSensor::ColorSensor frontColorSense;
-    RGB p_RGB;
-    HSV p_approximateHSV;
-    HSV p_proximateHSV;
-    SDWORD p_reflection;
-    SDWORD p_Ambient;
-    void p_setRgb(void);
-    void p_setHSV(void);
-    void p_setColor(void);
+    static ColorSensor::ColorSensor frontColorSense;
+    static RGB p_RGB;
+    static HSV p_approximateHSV;
+    static HSV p_proximateHSV;
+    static SDWORD p_reflection;
+    static SDWORD p_Ambient;
+    static void p_setRgb(void);
+    static void p_setHSV(void);
+    static void p_setColor(void);
     
 }
