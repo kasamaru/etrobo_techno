@@ -57,6 +57,7 @@ void mainTask(intptr_t unused) {
     sta_cyc(CYC_TRACER);
 
     slp_tsk();  // バックボタンが押されるまで待つ
+    /* TODO: ono システムエンドは、競技制限時間固定にするのと終わったことのふたつ */
 
     // 周期ハンドラ停止
     stp_cyc(CYC_TRACER);
