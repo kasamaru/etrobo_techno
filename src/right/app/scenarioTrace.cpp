@@ -4,33 +4,33 @@
 
 #include "scenarioTrace.h"
 
-void ScenarioTrace::ScenarioTrace(Walker *pWalker, Timer *pTimer) : m_pWalker(pWalker), m_pTimer(pTimer)
+void ScenarioTrace::ScenarioTrace(Walker *pWalker, Timer *pTimer, BYTE byMaxParams) : m_pWalker(pWalker), m_pTimer(pTimer)
 {
     m_stWork.byExeParamsIndex = 0;
     m_stWork.dwStartTime = 0;
-    m_eExecuteState = eExECUTE_STATE_INIT;
+    m_eExecuteState = Init;
 }
 
 /**
  * @brief シナリオトレース実行
  * @return 実行状態
  */
-E_EXECUTE_STATE ScenarioTrace::Run(void)
+Common::ExecuteState ScenarioTrace::Run(void)
 {
     switch (m_stExecuteSate)
     {
-    case eEXECUTE_STATE_INIT:
+    case Common::ExecuteState::Init:
         /* 初期化 */
         this.executeInit();
         break;
 
-    case eEXECUTE_STATE_EXE:
+    case Common::ExecuteState::Execute:
         /* 実行状態 */
         /* 中身でパラメータ入力している分だけぶん回すイメージ */
         this.executeWalking();
         break;
 
-    case eEXECUTE_STATE_END:
+    case Common::ExecuteState::End:
         break;
 
     default:
@@ -48,30 +48,30 @@ E_EXECUTE_STATE ScenarioTrace::Run(void)
  * @param eSrcState
  * @return 次の状態
  */
-E_EXECUTE_STATE ScenarioTrace::getNextState(E_EXECUTE_STATE eSrcState)
+Common::ExecuteState ScenarioTrace::getNextState(Common::ExecuteState eSrcState)
 {
-    E_EXECUTE_STATE eNextState = eSrcState;
-    if (eEXECUTE_STATE_INIT == eSrcState)
+    Common::ExecuteState eNextState = eSrcState;
+    if (Common::ExecuteState::Init == eSrcState)
     {
-        eNextState = eEXECUTE_STATE_EXE
-    } else if (eEXECUTE_STATE_EXE == eSrcState)
+        eNextState = Execute
+    } else if (Common::ExecuteState::Execute == eSrcState)
     {
         if (m_stWork.byExeParamsIndex == m_stParams.byMaxParams)
         {
-            eNextState = eEXECUTE_STATE_END;
+            eNextState = Common::ExecuteState::End;
         }
     }else 
     {
         /* これ以外は、ENDを強制的に返す */
-        eNextState = eEXECUTE_STATE_END;
+        eNextState = Common::ExecuteState::End;
     }
     return eNextState;
 }
 
-E_EXECUTE_STATE ScenarioTrace::executeInit(void)
+Common::ExecuteState ScenarioTrace::executeInit(void)
 {
     /* ウォーカー初期化 */
-    return eEXECUTE_STATE_EXE;
+    return Execute;
 }
 
 /**

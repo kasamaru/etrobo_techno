@@ -28,22 +28,23 @@ using DWORD = uint32_t;
 #define MIN(src, dst) ((src < dst) ? src : dst)
 
 /* TODO: ono 基本動作シーケンス名の変更と認識合わせ */
-typedef enum
+namespace Common
 {
-    eSEQ_INIT = 0, /* 初期化中 */
-    eSEQ_SCENARIO_TRACE_1, /* シナリオトレース1(仮) */
-    eSEQ_LINE_TRACE_1, /* ライントレース1(仮) */
-    eSEQ_SMART_CARRY, /* スマートキャリー */
-    eSEQ_SCENARIO_TRACE_2, /* シナリオトレース2(仮) */
-    eSEQ_LINE_TRACE_2, /* ライントレース2(仮) */
-    eSEQ_END, /* 終了 */
-    eSEQ_MAX = 7,
-} E_ALL_TASK_SEQ;
+    enum class ExecuteState : BYTE {
+        Init = 0,
+        Execute,      /* 実行中 */
+        End,      /* 処理終了 */
+        MAX = 3,
+    };
 
-typedef enum
-{
-    eExECUTE_STATE_INIT = 0
-    eEXECUTE_STATE_EXE,      /* 実行中 */
-    eEXECUTE_STATE_END,      /* 処理終了 */
-    eEXECUTE_STATE_MAX = 3,
-} E_EXECUTE_STATE;
+    enum class TaskSeq : BYTE {
+        Init = 0, /* 初期化中 */
+        SCENARIO_TRACE_1, /* シナリオトレース1(仮) */
+        LINE_TRACE_1, /* ライントレース1(仮) */
+        SMART_CARRY, /* スマートキャリー */
+        SCENARIO_TRACE_2, /* シナリオトレース2(仮) */
+        LINE_TRACE_2, /* ライントレース2(仮) */
+        END, /* 終了 */
+        MAX = 7,
+    }
+}

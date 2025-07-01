@@ -2,77 +2,96 @@
 #include <cassert>
 
 #include "rightMain.h"
+#include "app/scenarioTrace.h"
+
+#define ONE_SECOND_MS (1000)
+
+static ST_SCENARIO_TRACE_PARAMS s_stScenarioParams1 ={
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }, /* 直進1秒タスク */
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+}
+
+static ST_SCENARIO_TRACE_PARAMS s_stScenarioParams2 ={
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }, /* 直進1秒タスク */
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+}
+
+static ST_SCENARIO_TRACE_PARAMS s_stSmartCarryParams1 ={
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }, /* 直進1秒タスク */
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+}
 
 void RightCource::RihtCource(void){
     /* TODO: ono 各センサのAPIを固定で呼んで初期化のポート固定 */
-    s_eExecuteSeq = eSEQ_INIT;
-    s_bIsRunning = true;
+    m_eExecuteSeq = Common::TaskSeq::Init;
+    m_bIsRunning = true;
+    /* TODO: インスタンス作成時にいろいろなクラスを同時定義 */
+    /* TODO: app系のクラスには、必要なパラメータをここでセットしに行く、関数を通して */
 }
 
 /**
- * 毎周期タスクのエントリーポイントの作成
- * 内部は、whileの中に状態遷移を入れる形
+ * @brief タスクシーケンス更新確認
+ * @param c_eCurTaskSeq
+ * @param c_eCurState
+ * @return 次のタスクシーケンス
  */
-
- /**
-  * 毎周期タスクのエンドポイントの作成
-  * ークラスのデリートする
-  */
-
-  /**
-   * @brief タスクシーケンス更新確認
-   * @param c_eCurTaskSeq
-   * @param c_eCurState
-   * @return 次のタスクシーケンス
-   */
-static E_ALL_TASK_SEQ RightCource::checkNextTaskSeq(const E_ALL_TASK_SEQ c_eCurTaskSeq, const E_EXECUTE_STATE c_eCurState)
+static Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSeq, const Common::ExecuteState c_eCurState)
 {
-    E_ALL_TASK_SEQ eNextTaskSeq = c_eCurTaskSeq;
+    Common::TaskSeq eNextTaskSeq = c_eCurTaskSeq;
     switch (c_eCurTaskSeq)
     {
-        case eSEQ_INIT:
+        case Common::TaskSeq::Init:
         /* 起動時シーケンス */
             if(eEXECUTE_STATE_END == c_eCurState) {
-                eNextTaskSeq = eSEQ_SCENARIO_TRACE_1;
+                eNextTaskSeq = Common::TaskSeq::SCENARIO_TRACE_1;
             }
             break;
 
-        case eSEQ_SCENARIO_TRACE_1:
+        case Common::TaskSeq::SCENARIO_TRACE_1:
             /* スタートしてからラップゲートまでのシナリオトレース */
             if(eEXECUTE_STATE_END == c_eCurState) {
-                eNextTaskSeq = eSEQ_LINE_TRACE_1;
+                eNextTaskSeq = Common::TaskSeq::LINE_TRACE_1;
             }
             break;
 
-        case eSEQ_LINE_TRACE_1:
+        case Common::TaskSeq::LINE_TRACE_1:
             /* ラップゲートを超えてからスマートキャリースタート地点までのライントレース */
             if(eEXECUTE_STATE_END == c_eCurState) {
-                eNextTaskSeq = eSEQ_SMART_CARRY;
+                eNextTaskSeq = Common::TaskSeq::SMART_CARRY;
             }
             break;
 
-        case eSEQ_SMART_CARRY:
+        case Common::TaskSeq::SMART_CARRY:
             /* スマートキャリ―スタートから物体をキャリーして円の中に動かすタスク */
             if(eEXECUTE_STATE_END == c_eCurState) {
-                eNextTaskSeq = eSEQ_SCENARIO_TRACE_2;
+                eNextTaskSeq = Common::TaskSeq::SCENARIO_TRACE_2;
             }
             break;
         
-        case eSEQ_SCENARIO_TRACE_2:
+        case Common::TaskSeq::SCENARIO_TRACE_2:
             /* 円の中からコースラインまで戻るときのシナリオトレース */
             if(eEXECUTE_STATE_END == c_eCurState) {
-                eNextTaskSeq = eSEQ_LINE_TRACE_2;
+                eNextTaskSeq = Common::TaskSeq::LINE_TRACE_2;
             }
             break;
 
-        case eSEQ_LINE_TRACE_2:
+        case Common::TaskSeq::LINE_TRACE_2:
             /* コースラインを発見してからゴールを超えるまで */
             if(eEXECUTE_STATE_END == c_eCurState) {
-                eNextTaskSeq = eSEQ_END;
+                eNextTaskSeq = Common::TaskSeq::END;
             }
             break;
         
-        case eSEQ_END:
+        case Common::TaskSeq::END:
             /* ゴールした状態 */
             this.stopAlwaysTask();
             break;
@@ -80,7 +99,7 @@ static E_ALL_TASK_SEQ RightCource::checkNextTaskSeq(const E_ALL_TASK_SEQ c_eCurT
         default:
             /* ここには来ない */
             assert(false);
-            eNextTaskSeq = eSEQ_END;
+            eNextTaskSeq = Common::TaskSeq::END;
             break;
     }
     return eNextTaskSeq;
@@ -92,58 +111,57 @@ static E_ALL_TASK_SEQ RightCource::checkNextTaskSeq(const E_ALL_TASK_SEQ c_eCurT
  */
 bool RightCource::StartAlwaysTask(void) {
     /* スタート開始 */
-
-    while(s_bIsRunning) {
-        E_EXECUTE_STATE eExeState = eEXECUTE_STATE_INIT;
-        switch (s_eExecuteSeq)
+    while(m_bIsRunning) {
+        Common::ExecuteState eExeState = Common::ExecuteState::Init;
+        switch (m_eExecuteSeq)
         {
-            case eSEQ_INIT:
+            case Common::TaskSeq::Init:
             /* 起動時シーケンス */
             /* TODO: 起動時シーケンスの洗だし */
-                eExeState = eEXECUTE_STATE_END;
+                eExeState = Common::ExecuteState::End;
                 break;
 
-            case eSEQ_SCENARIO_TRACE_1:
+            case Common::TaskSeq::SCENARIO_TRACE_1:
                 /* スタートしてからラップゲートまでのシナリオトレース */
-                eExeState = ;
+                eExeState = checkNextTaskSeq;
                 break;
 
-            case eSEQ_LINE_TRACE_1:
+            case Common::TaskSeq::LINE_TRACE_1:
                 /* ラップゲートを超えてからスマートキャリースタート地点までのライントレース */
-                eExeState = ;
+                eExeState = checkNextTaskSeq;
                 break;
 
-            case eSEQ_SMART_CARRY:
+            case Common::TaskSeq::SMART_CARRY:
                 /* スマートキャリ―スタートから物体をキャリーして円の中に動かすタスク */
-                eExeState = ;
+                eExeState = checkNextTaskSeq;
                 break;
             
-            case eSEQ_SCENARIO_TRACE_2:
+            case Common::TaskSeq::SCENARIO_TRACE_2:
                 /* 円の中からコースラインまで戻るときのシナリオトレース */
-                eExeState = ;
+                eExeState = checkNextTaskSeq;
                 break;
 
-            case eSEQ_LINE_TRACE_2:
+            case Common::TaskSeq::LINE_TRACE_2:
                 /* コースラインを発見してからゴールを超えるまで */
-                eExeState = ;
+                eExeState = checkNextTaskSeq;
                 break;
             
-            case eSEQ_END:
+            case Common::TaskSeq::END:
                 /* ゴールした状態 */
                 this.stopAlwaysTask();
-                s_bIsRunning = false;
+                m_bIsRunning = false;
                 break;
 
             default:
                 /* ここには来ない */
                 assert(false);
-                s_eExecuteSeq = eSEQ_END;
+                m_eExecuteSeq = Common::TaskSeq::END;
                 break;
         }
-        s_eExecuteSeq = checkNextTaskSeq(s_eExecuteSeq, eExeState);
+        m_eExecuteSeq = checkNextTaskSeq(m_eExecuteSeq, eExeState);
 
     }
-    return s_bIsRunning;
+    return m_bIsRunning;
 }
 
 static void RightCource::stopAlwaysTask(void) {
