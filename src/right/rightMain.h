@@ -2,12 +2,15 @@
 #include <stdio.h>
 #include "common/common.h"
 
+using namespace Common;
+
 class RightCource {
     public:
-    void startAlwaysTask(void);
-    void stopAlwaysTask(void);
+    bool StartAlwaysTask(void);
 
     private:
-    ColorSense ;
-    Walker ;
+     void stopAlwaysTask(void);
+     Common::TaskSeq checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSeq, const Common::ExecuteState c_eCurState);
+     bool m_bIsRunning;
+     Common::TaskSeq m_eExecuteSeq;
 }

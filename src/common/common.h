@@ -26,3 +26,25 @@ using DWORD = uint32_t;
 
 #define MAX(src, dst) ((src > dst) ? src : dst)
 #define MIN(src, dst) ((src < dst) ? src : dst)
+
+/* TODO: ono 基本動作シーケンス名の変更と認識合わせ */
+namespace Common
+{
+    enum class ExecuteState : BYTE {
+        Init = 0,
+        Execute,      /* 実行中 */
+        End,      /* 処理終了 */
+        MAX = 3,
+    };
+
+    enum class TaskSeq : BYTE {
+        Init = 0, /* 初期化中 */
+        SCENARIO_TRACE_1, /* シナリオトレース1(仮) */
+        LINE_TRACE_1, /* ライントレース1(仮) */
+        SMART_CARRY, /* スマートキャリー */
+        SCENARIO_TRACE_2, /* シナリオトレース2(仮) */
+        LINE_TRACE_2, /* ライントレース2(仮) */
+        END, /* 終了 */
+        MAX = 7,
+    }
+}
