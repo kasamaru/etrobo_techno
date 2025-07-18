@@ -8,6 +8,15 @@
 void ForceSense::ForceSense():
     forceSense(EPort::PORT_D) {
 
+
 }
 
 /* TODO: この以下にラップした関数を作成して下さい */
+/**
+ * 押下中か否か
+ * @retval true  押下している
+ * @retval false 押下していない
+ */
+bool ForceSense::isPushed() const {
+    return mForceSensor.isTouched();
+}

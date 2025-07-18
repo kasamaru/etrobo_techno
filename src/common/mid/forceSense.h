@@ -13,6 +13,8 @@ class ForceSense {
     public:
         ForceSense();
 
+   bool isPushed() const;
+
     private:
-        ForceSensor forceSense;
+        ForceSensor &mForceSensor;
 }
