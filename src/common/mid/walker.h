@@ -8,10 +8,9 @@
 #include "common.h"
 
 using namespace spikeapi;
-
 class Walker {
     public:
-        Walker();
+        Walker(Motor& leftWheel, Motor& rightWheel);
         void runForward(WORD rightPWM, WORD leftPWM);
         void runBackward(WORD rightPWM, WORD leftPWM);
         DWORD getRightSpeed(void);
@@ -21,6 +20,6 @@ class Walker {
         void brakeRightWheel(void);
         void brakeLeftWheel(void);
     private:
-        Motor leftWheel;
-        Motor rightWheel;
+        Motor& mLeftWheel;
+        Motor& mRightWheel;
 };

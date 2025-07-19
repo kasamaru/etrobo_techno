@@ -2,8 +2,7 @@
 #pragma once
 #include <cstdint>
 #include <cstring>
-#include "mid/colorSense.h"
-#include "mid/Walker.h"
+
 using SBYTE = int8_t;
 using BYTE = uint8_t;
 
@@ -46,5 +45,5 @@ namespace Common
         LINE_TRACE_2, /* ライントレース2(仮) */
         END, /* 終了 */
         MAX = 7,
-    }
+    };
 }

@@ -28,4 +28,4 @@ class ColorSense {
     static void p_setHSV(void);
     static void p_setColor(void);
     
-}
+};

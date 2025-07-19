@@ -1,35 +1,33 @@
 mkfile_path := $(dir $(lastword $(MAKEFILE_LIST)))
 
+# C++オブジェクトファイルの定義
 APPL_CXXOBJS += \
-	Walker.o \
-	LineWalker.o \
-	Starter.o \
-	ColorMonitor.o \
-	GyroMonitor.o \
-	SonarMonitor.o \
-	PidControl.o \
-	TimerWalker.o \
-	ScenarioWalker.o \
-	SelectPlayer.o
+	right/rightMain.o \
+	right/app/scenarioTrace.o \
+	common/mid/timer.o \
+	common/mid/walker.o
 
+# 言語設定
 SRCLANG := c++
 
 ifdef CONFIG_EV3RT_APPLICATION
 
 # Include libraries
-include $(EV3RT_SDK_LIB_DIR)/libcpp-ev3/Makefile
+include $(EV3RT_SDK_LIB_DIR)/libcpp-spike/Makefile
 
 endif
 
-APPL_DIRS += $(mkfile_path)app $(mkfile_path)unit
+# アプリケーションディレクトリの追加
+APPL_DIRS += \
+	$(mkfile_path) \
+	$(mkfile_path)right \
+	$(mkfile_path)right/app \
+	$(mkfile_path)common/mid
 
+# インクルードパスの設定
 INCLUDES += \
+	-I$(mkfile_path) \
 	-I$(mkfile_path)right \
 	-I$(mkfile_path)right/app \
-	-I$(mkfile_path)right/mid \
-	-I$(mkfile_path)left \
-	-I$(mkfile_path)left/app \
-	-I$(mkfile_path)left/mid \
-	-I$(mkfile_path)common
-	-I$(mkfile_path)common/app \
-	-I$(mkfile_path)common/mid \
+	-I$(mkfile_path)common \
+	-I$(mkfile_path)common/mid

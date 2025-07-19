@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 /* TODO: ファイル名がよくないので変更、技術教育ならLineMonitorになっている */
+
 #include "colorSense.h"
 
 void ColorSense::ColorSense():

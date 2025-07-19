@@ -4,11 +4,37 @@
 
 #include "scenarioTrace.h"
 
-void ScenarioTrace::ScenarioTrace(Walker *pWalker, Timer *pTimer, BYTE byMaxParams) : m_pWalker(pWalker), m_pTimer(pTimer)
+ScenarioTrace::ScenarioTrace(Walker *pWalker, Timer *pTimer) : m_pWalker(pWalker), m_pTimer(pTimer)
 {
     m_stWork.byExeParamsIndex = 0;
-    m_stWork.dwStartTime = 0;
-    m_eExecuteState = Init;
+    m_eExecuteState = Common::ExecuteState::Init;
+}
+
+/**
+ * @brief シナリオトレースパラメータセット
+ * @param stParams パラメータ構造体
+ * @param byMaxParams 最大パラメータ数
+ */
+void ScenarioTrace::SetParams(ST_SCENARIO_TRACE_PARAMS* pstParams, const BYTE byMaxParams)
+{
+    if(byMaxParams > MAX_PARAMS) {
+        /* 最大パラメータ数を超えているので、エラー */
+        return;
+    }
+    for(BYTE i = 0; i < byMaxParams; i++) {
+        m_stParams[i] = pstParams[i];
+    }
+    m_stWork.byMaxExePrams = byMaxParams;
+}
+
+/**
+ * @brief 現在の実行コマンド取得
+ * @return 現在の実行コマンド
+ */
+void ScenarioTrace::RunReady(void)
+{
+    m_stWork.byExeParamsIndex = 0;
+    m_eExecuteState = Common::ExecuteState::Init;
 }
 
 /**
@@ -17,17 +43,17 @@ void ScenarioTrace::ScenarioTrace(Walker *pWalker, Timer *pTimer, BYTE byMaxPara
  */
 Common::ExecuteState ScenarioTrace::Run(void)
 {
-    switch (m_stExecuteSate)
+    switch (m_eExecuteState)
     {
     case Common::ExecuteState::Init:
         /* 初期化 */
-        this.executeInit();
+        this->executeInit();
         break;
 
     case Common::ExecuteState::Execute:
         /* 実行状態 */
         /* 中身でパラメータ入力している分だけぶん回すイメージ */
-        this.executeWalking();
+        this->executeWalking();
         break;
 
     case Common::ExecuteState::End:
@@ -39,8 +65,8 @@ Common::ExecuteState ScenarioTrace::Run(void)
     }
 
     /* ここで状態遷移 */
-    m_stExecuteSate = this.getNextState(m_stExecuteSate);
-    return m_stExecuteSate;
+    m_eExecuteState = this->getNextState(m_eExecuteState);
+    return m_eExecuteState;
 }
 
 /**
@@ -53,10 +79,10 @@ Common::ExecuteState ScenarioTrace::getNextState(Common::ExecuteState eSrcState)
     Common::ExecuteState eNextState = eSrcState;
     if (Common::ExecuteState::Init == eSrcState)
     {
-        eNextState = Execute
+        eNextState = Common::ExecuteState::Execute;
     } else if (Common::ExecuteState::Execute == eSrcState)
     {
-        if (m_stWork.byExeParamsIndex == m_stParams.byMaxParams)
+        if (m_stWork.byExeParamsIndex == m_stWork.byMaxExePrams)
         {
             eNextState = Common::ExecuteState::End;
         }
@@ -70,29 +96,31 @@ Common::ExecuteState ScenarioTrace::getNextState(Common::ExecuteState eSrcState)
 
 Common::ExecuteState ScenarioTrace::executeInit(void)
 {
-    /* ウォーカー初期化 */
-    return Execute;
+    /* 1パラメータを実行するための初期化 */
+    m_pTimer->start(m_stParams[m_stWork.byExeParamsIndex].dwDuration);
+
+    return Common::ExecuteState::Execute;
 }
 
 /**
  * @brief 実行状態
  */
-void ScenarioTrace::executeWalking(void)
+Common::ExecuteState ScenarioTrace::executeWalking(void)
 {
+    Common::ExecuteState eNextState = Common::ExecuteState::Execute;
     /* コマンド判定をする */
     /* 回転のためのバイアスは、右回転向けのインプットであると判断する */
     BYTE byParamsIndex = m_stWork.byExeParamsIndex;
     /* 前進するときの車輪のPWNバイアス登録 */
-    m_pWalker->setXXX(m_stParams[byParamsIndex].nRightBias, m_stParams[byParamsIndex].nLeftBias);
-    /* walkerの実行 */
-    m_pWalker->run();
+    m_pWalker->runForward(m_stParams[byParamsIndex].nRightBias, m_stParams[byParamsIndex].nLeftBias);
 
     /* 制限時間の判定 */
-    DWORD dwCurTime = m_pTimer->getTime();
-    DWORD dwTimeLimit = m_stWork.dwStartTime + m_stParams[byParamsIndex].dwDuration;
-
-    if (dwTimeLimit >= dwCurTime)
+    if (m_pTimer->isTimeout())
     {
+        /* 制限時間が来たので、次のパラメータへ移行 */
         m_stWork.byExeParamsIndex++;
+        m_pTimer->reset(); // タイマーをリセット
+        eNextState = Common::ExecuteState::Init; // 次の状態はENDにする
     }
+    return eNextState;
 }

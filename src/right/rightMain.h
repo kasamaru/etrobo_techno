@@ -1,16 +1,25 @@
+/**
+ * @file rightMain.h
+ */
 #pragma once
-#include <stdio.h>
-#include "common/common.h"
+
+#include "spikeapi.h"
+#include "app/scenarioTrace.h"
 
 using namespace Common;
 
 class RightCource {
     public:
-    bool StartAlwaysTask(void);
+        RightCource(Walker *pWalker, Timer *pTimer);
+        bool StartAlwaysTask(void);
+        void StopAlwaysTask(void);
 
     private:
-     void stopAlwaysTask(void);
-     Common::TaskSeq checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSeq, const Common::ExecuteState c_eCurState);
-     bool m_bIsRunning;
-     Common::TaskSeq m_eExecuteSeq;
-}
+        Common::TaskSeq checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSeq, const Common::ExecuteState c_eCurState);
+        void scenarioTraceInit(ScenarioTrace::ST_SCENARIO_TRACE_PARAMS* pstParams, const BYTE byMaxParams);
+        bool m_bIsRunning;
+        Common::TaskSeq m_eExecuteSeq;
+        Walker *m_pWalker;
+        Timer *m_pTimer;
+        ScenarioTrace *m_pScenarioTrace;
+};

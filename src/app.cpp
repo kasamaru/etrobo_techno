@@ -5,13 +5,14 @@
  *  Author: Kazuhiro.Kawachi
  *  Copyright (c) 2015 Embedded Technology Software Design Robot Contest
  *****************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "Button.h"
-
+#include "app.h"
+#include "right/rightMain.h"
 #include "compileSW.h"
-#include "rightMain.h"
+
+#include "Light.h"
+#include "Button.h"
+#include "Display.h"
+
 // #include "left/leftMain.h"
 using namespace spikeapi;
 
@@ -26,7 +27,6 @@ Motor       gRightWheel(EPort::PORT_A,Motor::EDirection::CLOCKWISE,true);
 Clock       gClock;
 
 static Walker *gWalker;
-static ScenarioTrace *gScenarioTrace;
 // static ColorSense *gColorSense;
 // static ForceSense *gForceSense;
 static Timer *gTimer;
@@ -46,7 +46,7 @@ static void user_system_create() {
 
     // 初期化完了通知
     if (CURRENT_COURCE == COURCE_RIGHT) {
-        s_pRightCource = new RightCource();
+        s_pRightCource = new RightCource(gWalker, gTimer);
     } else {
         // s_pLeftCource = new LeftCource();
     }
@@ -58,7 +58,7 @@ static void user_system_create() {
  */
 static void user_system_destroy() {
     if (CURRENT_COURCE == COURCE_RIGHT) {
-        s_pRightCource->stopAlwaysTask();
+        s_pRightCource->StopAlwaysTask();
         delete s_pRightCource;
     } else {
         // s_pLeftCource->stopAlwaysTask();
@@ -90,14 +90,13 @@ void mainTask(intptr_t unused) {
 /**
  * ライントレースタスク
  */
-void courceTaskEntry(intptr_t exinf) {
-    /* TODO タッチセンサが押されたらプログラム開始にする */
-    if (ev3_button_is_pressed(BACK_BUTTON)) {
-    	printf("**** ev3_button_is_pressed(BACK_BUTTON)\n");
+void tracer_task(intptr_t exinf) {
+    Button button;
+    if (button.isLeftPressed()) {
         wup_tsk(MAIN_TASK);  // バックボタン押下
     } else {
         if (CURRENT_COURCE == COURCE_RIGHT) {
-            s_pRightCource->startAlwaysTask();
+            s_pRightCource->StartAlwaysTask();
         } else {
             // s_pLeftCource->startAlwaysTask();
         }

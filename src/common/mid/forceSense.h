@@ -15,4 +15,4 @@ class ForceSense {
 
     private:
         ForceSensor forceSense;
-}
+};
