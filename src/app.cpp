@@ -5,32 +5,49 @@
  *  Author: Kazuhiro.Kawachi
  *  Copyright (c) 2015 Embedded Technology Software Design Robot Contest
  *****************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "compileSW.h"
+#include "app.h"
 #include "right/rightMain.h"
-#include "left/leftMain.h"
+#include "compileSW.h"
+#include "starter.h"
+
+// #include "left/leftMain.h"
+using namespace spikeapi;
 
 // デストラクタ問題の回避
 // https://github.com/ETrobocon/etroboEV3/wiki/problem_and_coping
-void *__dso_handle=0;
+// void *__dso_handle=0;
 
+/* ColorSensor gColorSensor(EPort::PORT_E); */
+ForceSensor gForceSensor(EPort::PORT_D);
+Motor       gLeftWheel(EPort::PORT_B,Motor::EDirection::COUNTERCLOCKWISE,true);
+Motor       gRightWheel(EPort::PORT_A,Motor::EDirection::CLOCKWISE,true);
+Clock       gClock;
+
+static Starter *gStarter;
+static Walker *gWalker;
+// static ColorSense *gColorSense;
+static Timer *gTimer;
 static RightCource *s_pRightCource;
-static LeftCource *s_pLeftCource;
+// static LeftCource *s_pLeftCource;
 
 /**
  * EV3システム生成
  */
 static void user_system_create() {
+    /* タッチセンサの初期化に2msのdelayがあるので待機 */
+    tslp_tsk(2U * 1000U);
+
+    /* API関連の初期化を行う */
+    gWalker = new Walker(gLeftWheel, gRightWheel);
+    gTimer = new Timer(gClock);
 
     // 初期化完了通知
     if (CURRENT_COURCE == COURCE_RIGHT) {
-        s_pRightCource = new RightCource();
+        s_pRightCource = new RightCource(gWalker, gTimer);
     } else {
-        s_pLeftCource = new LeftCource();
+        // s_pLeftCource = new LeftCource();
     }
-    ev3_led_set_color(LED_ORANGE);
+
 }
 
 /**
@@ -38,11 +55,15 @@ static void user_system_create() {
  */
 static void user_system_destroy() {
     if (CURRENT_COURCE == COURCE_RIGHT) {
-        s_pRightCource->stopAlwaysTask();
+        s_pRightCource->StopAlwaysTask();
         delete s_pRightCource;
+        delete gWalker;
+        delete gTimer;
+        delete gStarter;
+        // delete gColorSense; // ColorSenseは使っていないので削除し
     } else {
-        s_pLeftCource->stopAlwaysTask();
-        delete s_pLeftCource;
+        // s_pLeftCource->stopAlwaysTask();
+        // delete s_pLeftCource;
     }
 }
 
@@ -70,15 +91,16 @@ void mainTask(intptr_t unused) {
 /**
  * ライントレースタスク
  */
-void courceTaskEntry(intptr_t exinf) {
-    if (ev3_button_is_pressed(BACK_BUTTON)) {
-    	printf("**** ev3_button_is_pressed(BACK_BUTTON)\n");
+void tracer_task(intptr_t exinf) {
+    /* ボタン押下下 */
+    gStarter = new Starter(gForceSensor);
+    if (gStarter->isPushed()) {
         wup_tsk(MAIN_TASK);  // バックボタン押下
     } else {
         if (CURRENT_COURCE == COURCE_RIGHT) {
-            s_pRightCource->startAlwaysTask();
+            s_pRightCource->StartAlwaysTask();
         } else {
-            s_pLeftCource->startAlwaysTask();
+            // s_pLeftCource->startAlwaysTask();
         }
     }
 

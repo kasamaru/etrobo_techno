@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-#include "ev3api.h"
+#include "spikeapi.h"
 
 /*
  *  各タスクの優先度の定義
@@ -30,8 +30,9 @@ extern "C" {
  */
 #ifndef TOPPERS_MACRO_ONLY
 
-extern void main_task(intptr_t exinf);
+extern void mainTask(intptr_t exinf);
 extern void tracer_task(intptr_t exinf);
+extern void ev3_cyc_tracer(intptr_t exinf);
 
 #endif /* TOPPERS_MACRO_ONLY */
 

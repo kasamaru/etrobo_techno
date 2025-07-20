@@ -9,12 +9,12 @@
 
 using namespace spikeapi;
 
-class ForceSense {
+class Starter {
     public:
-        ForceSense();
+        Starter(ForceSensor& forceSensor);
 
-   bool isPushed() const;
+        bool isPushed(void);
 
     private:
-        ForceSensor &mForceSensor;
-}
+        ForceSensor& mForceSensor;
+};

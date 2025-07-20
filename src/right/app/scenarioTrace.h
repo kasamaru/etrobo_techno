@@ -3,7 +3,6 @@
  */
 #pragma once
 
-#include <stdio.h>
 #include "common/common.h"
 #include "common/mid/walker.h"
 #include "common/mid/timer.h"
@@ -32,11 +31,12 @@ class ScenarioTrace
 
         typedef struct{
             BYTE byExeParamsIndex; /* 実行パラメータ数 */
-            DWORD dwStartTime; /* 1コマンド実行開始時間 */
+            BYTE byMaxExePrams; /* 最大実行パラメータ数 */
         } ST_WORK;
-        ScenarioTrace(Walker *pWalker, Timer *pTimer, BYTE byMaxParams);
+        ScenarioTrace(Walker *pWalker, Timer *pTimer);
         Common::ExecuteState Run(void);
-        void SetParams(ST_SCENARIO_TRACE_PARAMS& stParams);
+        void SetParams(ST_SCENARIO_TRACE_PARAMS* pstParams, const BYTE byMaxParams);
+        void RunReady(void);
         E_COMMANDS GetCurExeCommand(void);
         DWORD GetCurDuration(void);
         Common::ExecuteState getCurExeState(void);
@@ -46,8 +46,8 @@ class ScenarioTrace
         ST_SCENARIO_TRACE_PARAMS m_stParams[MAX_PARAMS];
         Common::ExecuteState m_eExecuteState;
         ST_WORK m_stWork;
-        Common::ExecuteState executeInit(void);
-        Common::ExecuteState getNextState(ExecuteState eSrcState);
+        void executeInit(void);
         void executeWalking(void);
-}
+        Common::ExecuteState getNextState(ExecuteState eSrcState);
+};
 

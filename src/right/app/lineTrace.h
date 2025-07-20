@@ -36,4 +36,4 @@ class LineTrace
         Common::ExecuteState executeInit(void);
         Common::ExecuteState getNextState(ExecuteState eSrc);
         void executeTrace(void);
-}
+};
