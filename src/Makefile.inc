@@ -2,10 +2,10 @@ mkfile_path := $(dir $(lastword $(MAKEFILE_LIST)))
 
 # C++オブジェクトファイルの定義
 APPL_CXXOBJS += \
-	right/rightMain.o \
-	right/app/scenarioTrace.o \
-	common/mid/timer.o \
-	common/mid/walker.o
+	rightMain.o \
+	scenarioTrace.o \
+	timer.o \
+	walker.o
 
 # 言語設定
 SRCLANG := c++
