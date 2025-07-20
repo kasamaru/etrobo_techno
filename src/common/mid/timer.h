@@ -21,5 +21,4 @@ class Timer {
         const Clock& mClock;
         DWORD dwStartTime_MS;
         DWORD dwTimeoutDuration;
-        bool bIsTimeout;
 };

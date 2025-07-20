@@ -8,10 +8,7 @@
 #include "app.h"
 #include "right/rightMain.h"
 #include "compileSW.h"
-
-#include "Light.h"
-#include "Button.h"
-#include "Display.h"
+#include "starter.h"
 
 // #include "left/leftMain.h"
 using namespace spikeapi;
@@ -20,15 +17,15 @@ using namespace spikeapi;
 // https://github.com/ETrobocon/etroboEV3/wiki/problem_and_coping
 // void *__dso_handle=0;
 
-// ColorSensor gColorSensor(EPort::PORT_E);
-// ForceSensor gForceSensor(EPort::PORT_D);
+/* ColorSensor gColorSensor(EPort::PORT_E); */
+ForceSensor gForceSensor(EPort::PORT_D);
 Motor       gLeftWheel(EPort::PORT_B,Motor::EDirection::COUNTERCLOCKWISE,true);
 Motor       gRightWheel(EPort::PORT_A,Motor::EDirection::CLOCKWISE,true);
 Clock       gClock;
 
+static Starter *gStarter;
 static Walker *gWalker;
 // static ColorSense *gColorSense;
-// static ForceSense *gForceSense;
 static Timer *gTimer;
 static RightCource *s_pRightCource;
 // static LeftCource *s_pLeftCource;
@@ -60,6 +57,10 @@ static void user_system_destroy() {
     if (CURRENT_COURCE == COURCE_RIGHT) {
         s_pRightCource->StopAlwaysTask();
         delete s_pRightCource;
+        delete gWalker;
+        delete gTimer;
+        delete gStarter;
+        // delete gColorSense; // ColorSenseは使っていないので削除し
     } else {
         // s_pLeftCource->stopAlwaysTask();
         // delete s_pLeftCource;
@@ -91,8 +92,9 @@ void mainTask(intptr_t unused) {
  * ライントレースタスク
  */
 void tracer_task(intptr_t exinf) {
-    Button button;
-    if (button.isLeftPressed()) {
+    /* ボタン押下下 */
+    gStarter = new Starter(gForceSensor);
+    if (gStarter->isPushed()) {
         wup_tsk(MAIN_TASK);  // バックボタン押下
     } else {
         if (CURRENT_COURCE == COURCE_RIGHT) {

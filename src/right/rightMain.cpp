@@ -18,13 +18,13 @@ static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams1[PARAMS1_MAX_
     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }
 };
 
-// static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams2[PARAMS2_MAX_NUM] = {
-//     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }, /* 直進1秒タスク */
-//     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
-//     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
-//     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
-//     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }
-// };
+static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams2[PARAMS2_MAX_NUM] = {
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }, /* 直進1秒タスク */
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }
+};
 
 // static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astSmartCarryParams1[PARAMS3_MAX_NUM] ={
 //     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }, /* 直進1秒タスク */
@@ -60,7 +60,7 @@ Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSe
         case Common::TaskSeq::Init:
         /* 起動時シーケンス */
             if(Common::ExecuteState::End == c_eCurState) {
-                /* TODO: 要素数は、まじ */
+                /* 次シーケンスのパラメータ渡し */
                 scenarioTraceInit(s_astScenarioParams1, PARAMS1_MAX_NUM);
                 eNextTaskSeq = Common::TaskSeq::SCENARIO_TRACE_1;
             }
@@ -83,6 +83,7 @@ Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSe
         case Common::TaskSeq::SMART_CARRY:
             /* スマートキャリ―スタートから物体をキャリーして円の中に動かすタスク */
             if(Common::ExecuteState::End == c_eCurState) {
+                scenarioTraceInit(s_astScenarioParams2, PARAMS2_MAX_NUM);
                 eNextTaskSeq = Common::TaskSeq::SCENARIO_TRACE_2;
             }
             break;
@@ -126,13 +127,13 @@ bool RightCource::StartAlwaysTask(void) {
         switch (m_eExecuteSeq)
         {
             case Common::TaskSeq::Init:
-            /* 起動時シーケンス */
-            /* TODO: 起動時シーケンスの洗だし */
+                /* 起動時シーケンス */
                 eExeState = Common::ExecuteState::End;
                 break;
 
             case Common::TaskSeq::SCENARIO_TRACE_1:
                 /* スタートしてからラップゲートまでのシナリオトレース */
+                /* ここまでにシナリオトレース1をエンドしている */
                 eExeState = m_pScenarioTrace->Run();
                 break;
 
@@ -148,7 +149,7 @@ bool RightCource::StartAlwaysTask(void) {
             
             case Common::TaskSeq::SCENARIO_TRACE_2:
                 /* 円の中からコースラインまで戻るときのシナリオトレース */
-                eExeState = Common::ExecuteState::End;
+                eExeState = m_pScenarioTrace->Run();
                 break;
 
             case Common::TaskSeq::LINE_TRACE_2:
@@ -178,6 +179,11 @@ void RightCource::StopAlwaysTask(void) {
     /* TODO: ono  */
 }
 
+/**
+ * @brief シナリオトレース開始前の初期化処理
+ * @param pstParams パラメータ
+ * @param byMaxParams 最大パラメータ数
+ */
 void RightCource::scenarioTraceInit(ScenarioTrace::ST_SCENARIO_TRACE_PARAMS* pstParams, const BYTE byMaxParams)
 {
     /* シナリオトレースの初期化 */

@@ -5,7 +5,8 @@ APPL_CXXOBJS += \
 	rightMain.o \
 	scenarioTrace.o \
 	timer.o \
-	walker.o
+	walker.o \
+	starter.o
 
 # 言語設定
 SRCLANG := c++

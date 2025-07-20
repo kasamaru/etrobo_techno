@@ -12,7 +12,6 @@ Timer::Timer(Clock& clock) :
     // 初期化
     dwStartTime_MS = 0;
     dwTimeoutDuration = 0;
-    bIsTimeout = false;
 
 }
 
@@ -23,7 +22,6 @@ Timer::Timer(Clock& clock) :
 void Timer::start(DWORD timeoutDuration_MS) {
     dwStartTime_MS = mClock.now();
     dwTimeoutDuration = timeoutDuration_MS;
-    bIsTimeout = false;
 }
 
 /**
@@ -49,7 +47,6 @@ bool Timer::isTimeout(void) {
     
     DWORD currentTime_MS = mClock.now();
     if ((currentTime_MS - dwStartTime_MS) >= dwTimeoutDuration) {
-        bIsTimeout = true;
         return true;
     }
     
