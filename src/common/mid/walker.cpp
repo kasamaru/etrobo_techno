@@ -13,6 +13,12 @@ Walker::Walker(Motor& leftWheel, Motor& rightWheel):
 
 }
 
+void Walker::stop(void) {
+    /* 両ホイールを止める */
+    stopRightWheel();
+    stopLeftWheel();
+
+}
 /**
  * @brief 前進
  * @note 前進する制限時間は、呼び元で管理すること

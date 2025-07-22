@@ -6,24 +6,21 @@
 #include "common/common.h"
 
 #define ONE_SECOND_MS (1000)
+#define ONE_MINUTES (60)
 #define PARAMS1_MAX_NUM (5)
 #define PARAMS2_MAX_NUM (5)
 #define PARAMS3_MAX_NUM (5)
 
 static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams1[PARAMS1_MAX_NUM] ={
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }, /* 直進1秒タスク */
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STOP, (1000* ONE_MINUTES * ONE_SECOND_MS), 0, 0 }, /* 直進100秒タスク */
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STOP, (1000* ONE_MINUTES * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STOP, (1000* ONE_MINUTES * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STOP, (1000* ONE_MINUTES * ONE_SECOND_MS), 0, 0 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STOP, (1000* ONE_MINUTES * ONE_SECOND_MS), 0, 0 },
 };
 
 static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams2[PARAMS2_MAX_NUM] = {
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }, /* 直進1秒タスク */
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_RIGHT, (1000 * ONE_SECOND_MS), 0, 0 }, /* 直進1秒タスク */
 };
 
 // static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astSmartCarryParams1[PARAMS3_MAX_NUM] ={
@@ -34,9 +31,10 @@ static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams2[PARAMS2_MAX_
 //     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }
 // };
 
-RightCource::RightCource(Walker *pWalker, Timer *pTimer):
+RightCource::RightCource(Walker *pWalker, Timer *pTimer, Starter *pStarter) :
     m_pWalker(pWalker),
-    m_pTimer(pTimer)
+    m_pTimer(pTimer),
+    m_pStarter(pStarter)
 {
     /* TODO: ono 各センサのAPIを固定で呼んで初期化のポート固定 */
     m_eExecuteSeq = Common::TaskSeq::Init;
@@ -68,9 +66,7 @@ Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSe
 
         case Common::TaskSeq::SCENARIO_TRACE_1:
             /* スタートしてからラップゲートまでのシナリオトレース */
-            if(Common::ExecuteState::End == c_eCurState) {
-                eNextTaskSeq = Common::TaskSeq::LINE_TRACE_1;
-            }
+            eNextTaskSeq = Common::TaskSeq::SCENARIO_TRACE_1;
             break;
 
         case Common::TaskSeq::LINE_TRACE_1:
@@ -121,57 +117,57 @@ Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSe
  * @return true:常時タスク実行中 false:常時タスク終了or中断
  */
 bool RightCource::StartAlwaysTask(void) {
-    /* スタート開始 */
-    while(m_bIsRunning) {
-        Common::ExecuteState eExeState = Common::ExecuteState::Init;
-        switch (m_eExecuteSeq)
-        {
-            case Common::TaskSeq::Init:
-                /* 起動時シーケンス */
-                eExeState = Common::ExecuteState::End;
-                break;
-
-            case Common::TaskSeq::SCENARIO_TRACE_1:
-                /* スタートしてからラップゲートまでのシナリオトレース */
-                /* ここまでにシナリオトレース1をエンドしている */
-                eExeState = m_pScenarioTrace->Run();
-                break;
-
-            case Common::TaskSeq::LINE_TRACE_1:
-                /* ラップゲートを超えてからスマートキャリースタート地点までのライントレース */
-                eExeState = Common::ExecuteState::End;
-                break;
-
-            case Common::TaskSeq::SMART_CARRY:
-                /* スマートキャリ―スタートから物体をキャリーして円の中に動かすタスク */
-                eExeState = Common::ExecuteState::End;
-                break;
-            
-            case Common::TaskSeq::SCENARIO_TRACE_2:
-                /* 円の中からコースラインまで戻るときのシナリオトレース */
-                eExeState = m_pScenarioTrace->Run();
-                break;
-
-            case Common::TaskSeq::LINE_TRACE_2:
-                /* コースラインを発見してからゴールを超えるまで */
-                eExeState = Common::ExecuteState::End;
-                break;
-            
-            case Common::TaskSeq::END:
-                /* ゴールした状態 */
-                this->StopAlwaysTask();
-                m_bIsRunning = false;
-                break;
-
-            default:
-                /* ここには来ない */
-                assert(false);
-                m_eExecuteSeq = Common::TaskSeq::END;
-                break;
-        }
-        m_eExecuteSeq = checkNextTaskSeq(m_eExecuteSeq, eExeState);
-
+    if (!(m_pStarter->isPushed())) {
+        /* スタートボタンが押されたので、常時タスクを開始 */
+        return false; // スタートボタンが押されていないので、常時タスクを開始しない
     }
+    /* スタート開始 */
+    Common::ExecuteState eExeState = Common::ExecuteState::Init;
+    switch (m_eExecuteSeq)
+    {
+        case Common::TaskSeq::Init:
+            /* 起動時シーケンス */
+            eExeState = Common::ExecuteState::End;
+            break;
+
+        case Common::TaskSeq::SCENARIO_TRACE_1:
+            /* スタートしてからラップゲートまでのシナリオトレース */
+            /* ここまでにシナリオトレース1をエンドしている */
+            eExeState = m_pScenarioTrace->Run();
+            break;
+
+        case Common::TaskSeq::LINE_TRACE_1:
+            /* ラップゲートを超えてからスマートキャリースタート地点までのライントレース */
+            eExeState = Common::ExecuteState::End;
+            break;
+
+        case Common::TaskSeq::SMART_CARRY:
+            /* スマートキャリ―スタートから物体をキャリーして円の中に動かすタスク */
+            eExeState = Common::ExecuteState::End;
+            break;
+        
+        case Common::TaskSeq::SCENARIO_TRACE_2:
+            /* 円の中からコースラインまで戻るときのシナリオトレース */
+            eExeState = m_pScenarioTrace->Run();
+            break;
+
+        case Common::TaskSeq::LINE_TRACE_2:
+            /* コースラインを発見してからゴールを超えるまで */
+            eExeState = Common::ExecuteState::End;
+            break;
+        
+        case Common::TaskSeq::END:
+            /* ゴールした状態 */
+            this->StopAlwaysTask();
+            break;
+
+        default:
+            /* ここには来ない */
+            assert(false);
+            m_eExecuteSeq = Common::TaskSeq::END;
+            break;
+    }
+    m_eExecuteSeq = checkNextTaskSeq(m_eExecuteSeq, eExeState);
     return m_bIsRunning;
 }
 
@@ -188,6 +184,7 @@ void RightCource::scenarioTraceInit(ScenarioTrace::ST_SCENARIO_TRACE_PARAMS* pst
 {
     /* シナリオトレースの初期化 */
     m_pScenarioTrace->SetParams(pstParams, byMaxParams);
+    printf("ScenarioTrace::SetParams() called with %d params.\n", byMaxParams);
     /* シナリオトレースの初期化 */
     m_pScenarioTrace->RunReady();
 }

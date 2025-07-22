@@ -12,6 +12,7 @@ using WORD = uint16_t;
 using SDWORD = int32_t;
 using DWORD = uint32_t;
 
+
 #define MAX_SBYTE (127)
 #define MIN_SBYTE (-128)
 #define MAX_BYTE (255)

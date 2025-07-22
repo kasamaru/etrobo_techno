@@ -18,6 +18,7 @@ class ScenarioTrace
             eCOMMAND_STRAIGHT = 0,
             eCOMMAND_RIGHT,
             eCOMMAND_LEFT,
+            eCOMMAND_STOP,
             eCOMMAND_MAX = 3,
         } E_COMMANDS;
 
