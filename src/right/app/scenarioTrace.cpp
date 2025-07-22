@@ -4,7 +4,7 @@
 
 #include "scenarioTrace.h"
 
-#define DEFAULT_STRAIGHT_PWM (20) // デフォルトの前進時PWM値
+#define DEFAULT_STRAIGHT_PWM (100) // デフォルトの前進時PWM値
 static WORD straight_pwm = DEFAULT_STRAIGHT_PWM; // 設定可能な前進時PWM値
 
 
