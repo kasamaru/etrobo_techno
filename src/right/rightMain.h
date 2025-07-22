@@ -5,12 +5,13 @@
 
 #include "spikeapi.h"
 #include "app/scenarioTrace.h"
+#include "starter.h"
 
 using namespace Common;
 
 class RightCource {
     public:
-        RightCource(Walker *pWalker, Timer *pTimer);
+        RightCource(Walker *pWalker, Timer *pTimer, Starter *pStarter);
         bool StartAlwaysTask(void);
         void StopAlwaysTask(void);
 
@@ -21,5 +22,6 @@ class RightCource {
         Common::TaskSeq m_eExecuteSeq;
         Walker *m_pWalker;
         Timer *m_pTimer;
+        Starter *m_pStarter; // Starterクラスのインスタンス
         ScenarioTrace *m_pScenarioTrace;
 };

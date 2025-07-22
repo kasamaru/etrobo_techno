@@ -13,6 +13,7 @@ class Walker {
         Walker(Motor& leftWheel, Motor& rightWheel);
         void runForward(WORD rightPWM, WORD leftPWM);
         void runBackward(WORD rightPWM, WORD leftPWM);
+        void stop(void);
         DWORD getRightSpeed(void);
         DWORD getLeftSpeed(void);
         void stopRightWheel(void);

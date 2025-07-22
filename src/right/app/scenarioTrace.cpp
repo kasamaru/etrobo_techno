@@ -4,7 +4,8 @@
 
 #include "scenarioTrace.h"
 
-#define STRAIGHT_PWM (100) // 前進時のPWM値
+#define DEFAULT_STRAIGHT_PWM (20) // デフォルトの前進時PWM値
+static WORD straight_pwm = DEFAULT_STRAIGHT_PWM; // 設定可能な前進時PWM値
 
 
 ScenarioTrace::ScenarioTrace(Walker *pWalker, Timer *pTimer) : m_pWalker(pWalker), m_pTimer(pTimer)
@@ -20,8 +21,8 @@ ScenarioTrace::ScenarioTrace(Walker *pWalker, Timer *pTimer) : m_pWalker(pWalker
  */
 void ScenarioTrace::SetParams(ST_SCENARIO_TRACE_PARAMS* pstParams, const BYTE byMaxParams)
 {
-    if(byMaxParams > MAX_PARAMS) {
-        /* 最大パラメータ数を超えているので、エラー */
+    if(byMaxParams > MAX_PARAMS || pstParams == nullptr) {
+        /* 最大パラメータ数を超えているか、無効なポインタなのでエラー */
         return;
     }
     for(BYTE i = 0; i < byMaxParams; i++) {
@@ -31,8 +32,8 @@ void ScenarioTrace::SetParams(ST_SCENARIO_TRACE_PARAMS* pstParams, const BYTE by
 }
 
 /**
- * @brief 現在の実行コマンド取得
- * @return 現在の実行コマンド
+ * @brief 実行準備処理
+ * @details パラメータインデックスと実行状態を初期化する
  */
 void ScenarioTrace::RunReady(void)
 {
@@ -60,6 +61,7 @@ Common::ExecuteState ScenarioTrace::Run(void)
         break;
 
     case Common::ExecuteState::End:
+        m_pWalker->stop(); // タイマーを停止
         break;
 
     default:
@@ -84,6 +86,7 @@ Common::ExecuteState ScenarioTrace::getNextState(Common::ExecuteState eSrcState)
     {
     case Common::ExecuteState::Init:
         eNextState = Common::ExecuteState::Execute;
+        break;
     case Common::ExecuteState::Execute:
         /* 実行状態 */
         if(m_pTimer->isTimeout()) {
@@ -103,8 +106,6 @@ Common::ExecuteState ScenarioTrace::getNextState(Common::ExecuteState eSrcState)
         break;
     case Common::ExecuteState::End:
         /* 実行完了状態 */
-        m_stWork.byExeParamsIndex = 0; // 実行パラメータインデックスをリセット
-        m_eExecuteState = Common::ExecuteState::Init; // 次の実行に備えて初期化
         eNextState = Common::ExecuteState::End; // 実行完了状態を維持
         break;
 
@@ -135,21 +136,24 @@ void ScenarioTrace::executeWalking(void)
     {
         case eCOMMAND_STRAIGHT:
             /* 前進 */
-            m_pWalker->runForward(STRAIGHT_PWM, STRAIGHT_PWM); // ここは適切なPWN値に置き換える
+            m_pWalker->runForward(straight_pwm, straight_pwm);
             break;
 
         case eCOMMAND_RIGHT:
             /* 右回転 */
-            m_pWalker->runForward(STRAIGHT_PWM + m_stParams[m_stWork.byExeParamsIndex].nRightBias, 
-                                  STRAIGHT_PWM - m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
+            m_pWalker->runForward(straight_pwm + m_stParams[m_stWork.byExeParamsIndex].nRightBias, 
+                                  straight_pwm - m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
             break;
 
         case eCOMMAND_LEFT:
             /* 左回転 */
-            m_pWalker->runForward(STRAIGHT_PWM - m_stParams[m_stWork.byExeParamsIndex].nRightBias, 
-                                  STRAIGHT_PWM + m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
+            m_pWalker->runForward(straight_pwm - m_stParams[m_stWork.byExeParamsIndex].nRightBias, 
+                                  straight_pwm + m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
             break;
-
+        case eCOMMAND_STOP:
+            /* 停止 */
+            m_pWalker->stop();
+            break;
         default:
             /* 想定外のコマンドなので、停止 */
             m_pWalker->stopRightWheel();

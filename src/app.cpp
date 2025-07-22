@@ -8,7 +8,10 @@
 #include "app.h"
 #include "right/rightMain.h"
 #include "compileSW.h"
-#include "starter.h"
+#include "Button.h"
+#include "Display.h"
+#include "Light.h"
+
 
 // #include "left/leftMain.h"
 using namespace spikeapi;
@@ -22,6 +25,8 @@ ForceSensor gForceSensor(EPort::PORT_D);
 Motor       gLeftWheel(EPort::PORT_B,Motor::EDirection::COUNTERCLOCKWISE,true);
 Motor       gRightWheel(EPort::PORT_A,Motor::EDirection::CLOCKWISE,true);
 Clock       gClock;
+Display     gDisplay;
+Light      gLight;
 
 static Starter *gStarter;
 static Walker *gWalker;
@@ -38,12 +43,13 @@ static void user_system_create() {
     tslp_tsk(2U * 1000U);
 
     /* API関連の初期化を行う */
+    gStarter = new Starter(gForceSensor);
     gWalker = new Walker(gLeftWheel, gRightWheel);
     gTimer = new Timer(gClock);
 
     // 初期化完了通知
     if (CURRENT_COURCE == COURCE_RIGHT) {
-        s_pRightCource = new RightCource(gWalker, gTimer);
+    s_pRightCource = new RightCource(gWalker, gTimer, gStarter);
     } else {
         // s_pLeftCource = new LeftCource();
     }
@@ -92,13 +98,14 @@ void mainTask(intptr_t unused) {
  * ライントレースタスク
  */
 void tracer_task(intptr_t exinf) {
-    /* ボタン押下下 */
-    gStarter = new Starter(gForceSensor);
-    if (gStarter->isPushed()) {
+    /* ボタン押下 */
+    Button button;
+    if (button.isLeftPressed()) {
         wup_tsk(MAIN_TASK);  // バックボタン押下
     } else {
         if (CURRENT_COURCE == COURCE_RIGHT) {
             s_pRightCource->StartAlwaysTask();
+            gLight.turnOff();
         } else {
             // s_pLeftCource->startAlwaysTask();
         }
