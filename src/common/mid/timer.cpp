@@ -1,7 +1,7 @@
 /**
  * @file timer.cpp
  */
-
+#include <stdio.h>
 #include "timer.h"
 
 /**

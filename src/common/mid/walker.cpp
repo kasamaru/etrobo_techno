@@ -19,6 +19,13 @@ void Walker::stop(void) {
     stopLeftWheel();
 
 }
+
+void Walker::setPWMForLineTrace(SWORD nRightPWM, SWORD nLeftPWM) {
+    /* ライントレース用のPWM値を設定 */
+    mLeftWheel.setPower(nLeftPWM);
+    mRightWheel.setPower(nRightPWM);
+}
+
 /**
  * @brief 前進
  * @note 前進する制限時間は、呼び元で管理すること

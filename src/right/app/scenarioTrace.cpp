@@ -1,7 +1,7 @@
 /**
  * ScenarioTrace.cpp
  */
-
+#include <stdio.h>
 #include "scenarioTrace.h"
 
 #define DEFAULT_STRAIGHT_PWM (100) // デフォルトの前進時PWM値
@@ -47,6 +47,7 @@ void ScenarioTrace::RunReady(void)
  */
 Common::ExecuteState ScenarioTrace::Run(void)
 {
+    // printf("Exe %d\n", static_cast<int>(m_eExecuteState));
     switch (m_eExecuteState)
     {
     case Common::ExecuteState::Init:
@@ -92,12 +93,12 @@ Common::ExecuteState ScenarioTrace::getNextState(Common::ExecuteState eSrcState)
         if(m_pTimer->isTimeout()) {
             /* タイムアウトしたので、次の状態へ */
             m_stWork.byExeParamsIndex++;
-            if(m_stWork.byExeParamsIndex < m_stWork.byMaxExePrams) {
-                /* 登録パラメータが残っている場合 */
-                eNextState = Common::ExecuteState::Init;
-            } else {
+            if(m_stWork.byExeParamsIndex >= m_stWork.byMaxExePrams) {
+                printf("ScenarioEnd\n");
                 /* 登録パラメータ実行完了の場合 */
                 eNextState = Common::ExecuteState::End;
+            } else {
+                eNextState = Common::ExecuteState::Init;
             }
         } else {
             /* 実行中なので、実行状態を維持 */
@@ -123,6 +124,7 @@ Common::ExecuteState ScenarioTrace::getNextState(Common::ExecuteState eSrcState)
 void ScenarioTrace::executeInit(void)
 {
     /* 1パラメータを実行するための初期化 */
+    m_pTimer->reset(); // タイマーをリセット
     m_pTimer->start(m_stParams[m_stWork.byExeParamsIndex].dwDuration);
 }
 
