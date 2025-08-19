@@ -3,10 +3,13 @@ mkfile_path := $(dir $(lastword $(MAKEFILE_LIST)))
 # C++オブジェクトファイルの定義
 APPL_CXXOBJS += \
 	rightMain.o \
+	pidCtrl.o \
 	scenarioTrace.o \
+	lineTrace.o\
 	timer.o \
 	walker.o \
-	starter.o
+	starter.o \
+	lineMonitor.o 
 
 # 言語設定
 SRCLANG := c++
@@ -23,7 +26,8 @@ APPL_DIRS += \
 	$(mkfile_path) \
 	$(mkfile_path)right \
 	$(mkfile_path)right/app \
-	$(mkfile_path)common/mid
+	$(mkfile_path)common/mid \
+	$(mkfile_path)common/app
 
 # インクルードパスの設定
 INCLUDES += \
@@ -31,4 +35,5 @@ INCLUDES += \
 	-I$(mkfile_path)right \
 	-I$(mkfile_path)right/app \
 	-I$(mkfile_path)common \
-	-I$(mkfile_path)common/mid
+	-I$(mkfile_path)common/mid \
+	-I$(mkfile_path)common/app

@@ -20,17 +20,17 @@ using namespace spikeapi;
 // https://github.com/ETrobocon/etroboEV3/wiki/problem_and_coping
 // void *__dso_handle=0;
 
-/* ColorSensor gColorSensor(EPort::PORT_E); */
+ColorSensor gColorSensor(EPort::PORT_E);
 ForceSensor gForceSensor(EPort::PORT_D);
 Motor       gLeftWheel(EPort::PORT_B,Motor::EDirection::COUNTERCLOCKWISE,true);
 Motor       gRightWheel(EPort::PORT_A,Motor::EDirection::CLOCKWISE,true);
 Clock       gClock;
 Display     gDisplay;
-Light      gLight;
+Light       gLight;
 
 static Starter *gStarter;
 static Walker *gWalker;
-// static ColorSense *gColorSense;
+static LineMonitor *gLineMonitor;
 static Timer *gTimer;
 static RightCource *s_pRightCource;
 // static LeftCource *s_pLeftCource;
@@ -46,10 +46,11 @@ static void user_system_create() {
     gStarter = new Starter(gForceSensor);
     gWalker = new Walker(gLeftWheel, gRightWheel);
     gTimer = new Timer(gClock);
+    gLineMonitor = new LineMonitor(gColorSensor);
 
     // 初期化完了通知
     if (CURRENT_COURCE == COURCE_RIGHT) {
-    s_pRightCource = new RightCource(gWalker, gTimer, gStarter);
+    s_pRightCource = new RightCource(gWalker, gTimer, gStarter, gLineMonitor);
     } else {
         // s_pLeftCource = new LeftCource();
     }
@@ -66,7 +67,7 @@ static void user_system_destroy() {
         delete gWalker;
         delete gTimer;
         delete gStarter;
-        // delete gColorSense; // ColorSenseは使っていないので削除し
+        delete gLineMonitor;
     } else {
         // s_pLeftCource->stopAlwaysTask();
         // delete s_pLeftCource;
@@ -105,7 +106,6 @@ void tracer_task(intptr_t exinf) {
     } else {
         if (CURRENT_COURCE == COURCE_RIGHT) {
             s_pRightCource->StartAlwaysTask();
-            gLight.turnOff();
         } else {
             // s_pLeftCource->startAlwaysTask();
         }

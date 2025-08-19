@@ -11,6 +11,7 @@ using namespace spikeapi;
 class Walker {
     public:
         Walker(Motor& leftWheel, Motor& rightWheel);
+        void setPWMForLineTrace(SWORD nRightPWM, SWORD nLeftPWM);
         void runForward(WORD rightPWM, WORD leftPWM);
         void runBackward(WORD rightPWM, WORD leftPWM);
         void stop(void);
