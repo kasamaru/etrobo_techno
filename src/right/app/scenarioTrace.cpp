@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "scenarioTrace.h"
 
-#define DEFAULT_STRAIGHT_PWM (100) // デフォルトの前進時PWM値
+#define DEFAULT_STRAIGHT_PWM (200) // デフォルトの前進時PWM値
 static WORD straight_pwm = DEFAULT_STRAIGHT_PWM; // 設定可能な前進時PWM値
 
 
@@ -138,17 +138,26 @@ void ScenarioTrace::executeWalking(void)
     {
         case eCOMMAND_STRAIGHT:
             /* 前進 */
+            printf("Straight:Current RightPWM:%d, Current LeftPWM:%d\n", 
+                straight_pwm, straight_pwm
+            );
             m_pWalker->runForward(straight_pwm, straight_pwm);
-            break;
-
-        case eCOMMAND_RIGHT:
-            /* 右回転 */
-            m_pWalker->runForward(straight_pwm + m_stParams[m_stWork.byExeParamsIndex].nRightBias, 
-                                  straight_pwm - m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
             break;
 
         case eCOMMAND_LEFT:
             /* 左回転 */
+            printf("LEFT: Current RightPWM:%d, Current LeftPWM:%d\n", 
+                straight_pwm + m_stParams[m_stWork.byExeParamsIndex].nRightBias,
+                straight_pwm - m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
+            m_pWalker->runForward(straight_pwm + m_stParams[m_stWork.byExeParamsIndex].nRightBias, 
+                                  straight_pwm - m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
+            break;
+
+        case eCOMMAND_RIGHT:
+            /* 右回転 */
+            printf("RIGHT: Current RightPWM:%d, Current LeftPWM:%d\n", 
+                straight_pwm - m_stParams[m_stWork.byExeParamsIndex].nRightBias,
+                straight_pwm + m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
             m_pWalker->runForward(straight_pwm - m_stParams[m_stWork.byExeParamsIndex].nRightBias, 
                                   straight_pwm + m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
             break;

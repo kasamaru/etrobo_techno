@@ -23,12 +23,12 @@ class LineTrace
         } ST_COLOR_TH;
         LineTrace(Walker* pWalker, LineMonitor* pLineMonitor);
         Common::ExecuteState Run(void);
-        void setColorTh(ST_COLOR_TH* pstColorTh);
     private:
         Walker* m_pWalker;
         LineMonitor* m_pLineMonitor;
         Caculation::PidCtrl* m_pidCtrl;
-        ST_COLOR_TH m_stColorTh;
+        ST_COLOR_TH m_stColorTh_Max;
+        ST_COLOR_TH m_stColorTh_Min;
         Common::ExecuteState m_eExecuteState;
         Common::ExecuteState executeTrace(void);
         Common::ExecuteState excuteInitWalk(void);

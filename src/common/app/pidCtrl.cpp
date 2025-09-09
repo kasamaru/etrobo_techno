@@ -37,8 +37,8 @@ SDWORD PidCtrl::Calculate_001(WORD wTarget, WORD wCurrent)
         nDerivative = nError - m_anPrevError[0];
     }
 
-    printf("PidCtrl::Calculate_001() called. Target: %d, Current: %d, Error: %d, Integral: %d, Derivative: %d\n",
-           wTarget, wCurrent, nError, m_nIntegral, nDerivative);
+    // printf("PidCtrl::Calculate_001() called. Target: %d, Current: %d, Error: %d, Integral: %d, Derivative: %d\n",
+    //        wTarget, wCurrent, nError, m_nIntegral, nDerivative);
     // PID制御計算
     SDWORD lOutput = (m_wKp * nError) + (m_wKi * m_nIntegral) + (m_wKd * nDerivative);
 
