@@ -42,20 +42,13 @@ Common::ExecuteState LineTrace::excuteInitWalk(void)
     /* TODO: ono ライントレース開始時の固定Runなかったかな？ */
     return Common::ExecuteState::Execute;
 }
-static bool isRunEnd = false;
+
 Common::ExecuteState LineTrace::executeTrace(void)
 {
     Common::ExecuteState eNextState = Common::ExecuteState::Execute;
-    if(isRunEnd) {
-        m_pWalker->setPWMForLineTrace(0, 0);
-        return eNextState;
-    }
     /* 青色を検知で終了 */
     if(m_pLineMonitor->isLineDetected(m_stColorTh_Max.wR, m_stColorTh_Max.wG, m_stColorTh_Max.wB, m_stColorTh_Min.wR, m_stColorTh_Min.wG, m_stColorTh_Min.wB)) {
-        // eNextState = Common::ExecuteState::End;
-        m_pWalker->setPWMForLineTrace(0, 0);
-        isRunEnd = true;
-        return eNextState;
+        eNextState = Common::ExecuteState::End;
     }
 
     /* Pid演算タスク */
