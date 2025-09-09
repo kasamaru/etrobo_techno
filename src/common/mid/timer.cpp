@@ -47,6 +47,8 @@ bool Timer::isTimeout(void) {
     
     DWORD currentTime_MS = mClock.now();
     if ((currentTime_MS - dwStartTime_MS) >= dwTimeoutDuration) {
+        printf("Timer timeout occurred.\n");
+        printf("Timer was running for %d milliseconds.\n", currentTime_MS - dwStartTime_MS);
         return true;
     }
     

@@ -64,14 +64,14 @@ DWORD Walker::getLeftSpeed(void) {
  * @brief 右ホイールを止める
  */
 void Walker::stopRightWheel(void) {
-    return mRightWheel.stop();
+    return mRightWheel.setPower(0);
 }
 
 /**
  * @brief 左ホイールを止める
  */
 void Walker::stopLeftWheel(void) {
-    return mLeftWheel.stop();
+    return mLeftWheel.setPower(0);
 }
 
 /**
