@@ -11,16 +11,19 @@
 #define PARAMS2_MAX_NUM (5)
 #define PARAMS3_MAX_NUM (5)
 
+#define HIGH_SPEED_MODE_DURATION_1 (5000 * ONE_SECOND_MS) /* ライントレース1高速モード継続時間 */
+#define HIGH_SPEED_MODE_DURATION_2 (2000 * ONE_SECOND_MS) /* ライントレース2高速モード継続時間 */
+
 static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams1[PARAMS1_MAX_NUM] ={
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (10* ONE_SECOND_MS), 0, 0 }, /* 直進秒タスク */
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (10000* ONE_SECOND_MS), 0, 0 }, /* 直進秒タスク */
 };
 
-static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams2[PARAMS2_MAX_NUM] = {
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_RIGHT, (1000 * ONE_SECOND_MS), 0, 0 }, /* 直進1秒タスク */
+static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams2[PARAMS3_MAX_NUM] = {
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1000 * ONE_SECOND_MS), 0, 0 }, /* 直進1秒タスク */
 };
 
-static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astSmartCarryParams1[PARAMS3_MAX_NUM] ={
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }, /* 直進1msタスク */
+static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astSmartCarryParams1[PARAMS2_MAX_NUM] ={
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1.563 * ONE_SECOND_MS), 0, 0 }, /* 直進1msタスク */
     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
@@ -37,7 +40,7 @@ RightCource::RightCource(Walker *pWalker, Timer *pTimer, Starter *pStarter, Line
     m_eExecuteSeq = Common::TaskSeq::Init;
     m_bIsRunning = false;
     m_pScenarioTrace = new ScenarioTrace(m_pWalker, m_pTimer); /* シナリオトレースの最大パラメータ数は5 */
-    m_pLineTrace = new LineTrace(m_pWalker, m_pLineMonitor); /* ライントレースの最大パラメータ数は5 */
+    m_pLineTrace = new LineTrace(m_pWalker, m_pLineMonitor, m_pTimer); /* ライントレースの最大パラメータ数は5 */
     /* TODO: インスタンス作成時にいろいろなクラスを同時定義 */
     /* TODO: app系のクラスには、必要なパラメータをここでセットしに行く、関数を通して */
 }
@@ -67,6 +70,7 @@ Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSe
             /* スタートしてからラップゲートまでのシナリオトレース */
             if(Common::ExecuteState::End == c_eCurState) {
                 /* シナリオトレース1をエンドしている */
+                m_pLineTrace->SetHighSpeedModeDeadLine(HIGH_SPEED_MODE_DURATION_1);
                 eNextTaskSeq = Common::TaskSeq::LINE_TRACE_1;
             }
             break;
@@ -93,6 +97,7 @@ Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSe
             /* 円の中からコースラインまで戻るときのシナリオトレース */
             if(Common::ExecuteState::End == c_eCurState) {
                 printf("last spart line trace\n");
+                m_pLineTrace->SetHighSpeedModeDeadLine(HIGH_SPEED_MODE_DURATION_2);
                 eNextTaskSeq = Common::TaskSeq::LINE_TRACE_2;
             }
             break;
