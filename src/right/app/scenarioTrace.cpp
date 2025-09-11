@@ -139,9 +139,9 @@ void ScenarioTrace::executeWalking(void)
         case eCOMMAND_STRAIGHT:
             /* 前進 */
             printf("Straight:Current RightPWM:%d, Current LeftPWM:%d\n", 
-                straight_pwm, straight_pwm
+                m_stParams[m_stWork.byExeParamsIndex].nRightBias, m_stParams[m_stWork.byExeParamsIndex].nLeftBias
             );
-            m_pWalker->runForward(straight_pwm, straight_pwm);
+            m_pWalker->runForward(m_stParams[m_stWork.byExeParamsIndex].nRightBias, m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
             break;
 
         case eCOMMAND_LEFT:
