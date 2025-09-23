@@ -3,6 +3,7 @@ mkfile_path := $(dir $(lastword $(MAKEFILE_LIST)))
 # C++オブジェクトファイルの定義
 APPL_CXXOBJS += \
 	rightMain.o \
+	paramStorage.o \
 	pidCtrl.o \
 	scenarioTrace.o \
 	lineTrace.o\

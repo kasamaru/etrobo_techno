@@ -3,32 +3,18 @@
  */
 
 #include "rightMain.h"
+
 #include "common/common.h"
+#include "common/paramStorage.h"
+
 
 #define ONE_SECOND_MS (1000)
 #define ONE_MINUTES (60)
-#define PARAMS1_MAX_NUM (1)
-#define PARAMS2_MAX_NUM (5)
-#define PARAMS3_MAX_NUM (5)
-
 #define HIGH_SPEED_MODE_DURATION_1 (5000 * ONE_SECOND_MS) /* ライントレース1高速モード継続時間 */
 #define HIGH_SPEED_MODE_DURATION_2 (2000 * ONE_SECOND_MS) /* ライントレース2高速モード継続時間 */
 
-static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams1[PARAMS1_MAX_NUM] ={
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (10000* ONE_SECOND_MS), 0, 0 }, /* 直進秒タスク */
-};
-
-static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams2[PARAMS3_MAX_NUM] = {
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1000 * ONE_SECOND_MS), 0, 0 }, /* 直進1秒タスク */
-};
-
-static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astSmartCarryParams1[PARAMS2_MAX_NUM] ={
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1.563 * ONE_SECOND_MS), 0, 0 }, /* 直進1msタスク */
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1 * ONE_SECOND_MS), 0, 0 }
-};
+// パラメータストレージインスタンス生成（右コース用）
+static ParamStorage s_paramStorage;
 
 RightCource::RightCource(Walker *pWalker, Timer *pTimer, Starter *pStarter, LineMonitor *pLineMonitor):
     m_pWalker(pWalker),
@@ -54,14 +40,18 @@ RightCource::RightCource(Walker *pWalker, Timer *pTimer, Starter *pStarter, Line
 Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSeq, const Common::ExecuteState c_eCurState)
 {
     Common::TaskSeq eNextTaskSeq = c_eCurTaskSeq;
+    // 右コース用パラメータ取得用
+    const ParamSide paramSide = ParamSide::RIGHT;
     switch (c_eCurTaskSeq)
     {
         case Common::TaskSeq::Init:
         /* 起動時シーケンス */
             if(Common::ExecuteState::End == c_eCurState) {
-                /* 次シーケンスのパラメータ渡し */
                 printf("ScenarioTrace 1 Start.\n");
-                scenarioTraceInit(s_astScenarioParams1, PARAMS1_MAX_NUM);
+                scenarioTraceInit(
+                    const_cast<ScenarioTrace::ST_SCENARIO_TRACE_PARAMS*>(s_paramStorage.getParams(paramSide, 0).data()),
+                    s_paramStorage.getParamsCount(paramSide, 0)
+                );
                 eNextTaskSeq = Common::TaskSeq::SCENARIO_TRACE_1;
             }
             break;
@@ -79,7 +69,10 @@ Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSe
             /* ラップゲートを超えてからスマートキャリースタート地点までのライントレース */
             if(Common::ExecuteState::End == c_eCurState) {
                 printf("Start Smart Carry\n");
-                scenarioTraceInit(s_astSmartCarryParams1, PARAMS2_MAX_NUM);
+                scenarioTraceInit(
+                    const_cast<ScenarioTrace::ST_SCENARIO_TRACE_PARAMS*>(s_paramStorage.getParams(paramSide, 1).data()),
+                    s_paramStorage.getParamsCount(paramSide, 1)
+                );
                 eNextTaskSeq = Common::TaskSeq::SMART_CARRY;
             }
             break;
@@ -88,7 +81,10 @@ Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSe
             /* スマートキャリ―スタートから物体をキャリーして円の中に動かすタスク */
             if(Common::ExecuteState::End == c_eCurState) {
                 printf("go back to line\n");
-                scenarioTraceInit(s_astScenarioParams2, PARAMS3_MAX_NUM);
+                scenarioTraceInit(
+                    const_cast<ScenarioTrace::ST_SCENARIO_TRACE_PARAMS*>(s_paramStorage.getParams(paramSide, 2).data()),
+                    s_paramStorage.getParamsCount(paramSide, 2)
+                );
                 eNextTaskSeq = Common::TaskSeq::SCENARIO_TRACE_2;
             }
             break;
