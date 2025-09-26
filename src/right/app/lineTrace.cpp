@@ -14,15 +14,16 @@
  */
 // #define DEFAULT_KP (900) /* デフォルトの比例ゲイン(0.01単位のパーセント) */
 // #define DEFAULT_KI (25) /* デフォルトの積分ゲイン(0.01単位のパーセント) */
-// #define DEFAULT_KD (5) /* デフォルトの微分ゲイン(0.01単位のパーセント) */
-// #define PID_TARGET (20)
+// #define DEFAULT_KD (6) /* デフォルトの微分ゲイン(0.01単位のパーセント) */
+// #define PID_TARGET (18)
 // #define TOP_PWM (70) /* トップPWM値 */
 #define DEFAULT_KP (900) /* デフォルトの比例ゲイン(0.01単位のパーセント) */
 #define DEFAULT_KI (25) /* デフォルトの積分ゲイン(0.01単位のパーセント) */
 #define DEFAULT_KD (5) /* デフォルトの微分ゲイン(0.01単位のパーセント) */
-#define PID_TARGET (18)
-#define HIGH_MODE_PWM (50) /* 高速モードPWM値 */
+#define PID_TARGET (20)
+#define HIGH_MODE_PWM (20) /* 高速モードPWM値 */
 #define LOW_MODE_PWM (10) /* 低速モードPWM値 */
+
 
 using namespace Common;
 
@@ -31,9 +32,19 @@ LineTrace::LineTrace(Walker* pWalker, LineMonitor* pLineMonitor, Timer* pTimer) 
 {
     m_pidCtrl = new Caculation::PidCtrl();
     m_pidCtrl->setGains(DEFAULT_KP, DEFAULT_KI, DEFAULT_KD);
-    m_stColorTh_Min = {30, 30, 117}; /* デフォルトは青色検知 */
+    m_stColorTh_Min = {27, 30, 110}; /* デフォルトは青色検知 */
     m_stColorTh_Max = {100, 100, 255};
 
+}
+
+void LineTrace::Init(WORD wCourse) {
+    m_eExecuteState = Common::ExecuteState::Init;
+    m_bHighModeEnd = false;
+    m_dwDuration = 0;
+    this->wCourse = wCourse;
+    m_pTimer->stop();
+    m_pTimer->reset();
+    m_pidCtrl->Reset();
 }
 
 void LineTrace::SetHighSpeedModeDeadLine(DWORD dwDuration) {
@@ -53,13 +64,16 @@ Common::ExecuteState LineTrace::excuteHighSpeedMode(void)
 {
     /* Pid演算タスク */
     SDWORD dwPidResult = m_pidCtrl->Calculate_001(PID_TARGET, m_pLineMonitor->getReflection());
-
+    SDWORD nLeftPWM;
+    SDWORD nRightPWM;
     /* 1000で割るのは、PID制御のゲインが0.01単位のパーセントなので */
-    SWORD nLeftPWM = HIGH_MODE_PWM - (dwPidResult / 1000);
-    SWORD nRightPWM = HIGH_MODE_PWM + (dwPidResult / 1000);
-
-    /* メモ: Pid出力が20000以上だと完全にコース外にいる */
-    // printf("Left PWM: %d, Right PWM: %d, PidResult: %d\n", nLeftPWM, nRightPWM, dwPidResult);
+    if(wCourse == 0) { // 左コース
+        nLeftPWM = HIGH_MODE_PWM - (dwPidResult / 1000);
+        nRightPWM = HIGH_MODE_PWM + (dwPidResult / 1000);
+    } else { // 右コース
+        nLeftPWM = HIGH_MODE_PWM - (dwPidResult / 1000);
+        nRightPWM = HIGH_MODE_PWM + (dwPidResult / 1000);
+    }
     m_pWalker->setPWMForLineTrace(nRightPWM, nLeftPWM);
     return Common::ExecuteState::Execute;
 }
@@ -72,13 +86,25 @@ Common::ExecuteState LineTrace::excuteLowSpeedMode(void)
     }
     /* Pid演算タスク */
     SDWORD dwPidResult = m_pidCtrl->Calculate_001(PID_TARGET, m_pLineMonitor->getReflection());
+    SDWORD nLeftPWM;
+    SDWORD nRightPWM;
 
     /* 1000で割るのは、PID制御のゲインが0.01単位のパーセントなので */
-    SWORD nLeftPWM = LOW_MODE_PWM - (dwPidResult / 1000);
-    SWORD nRightPWM = LOW_MODE_PWM + (dwPidResult / 1000);
-
-    /* メモ: Pid出力が20000以上だと完全にコース外にいる */
-    // printf("Left PWM: %d, Right PWM: %d, PidResult: %d\n", nLeftPWM, nRightPWM, dwPidResult);
+    if(wCourse == 0) { // 左コース
+        nLeftPWM = LOW_MODE_PWM - (dwPidResult / 1000);
+        nRightPWM = LOW_MODE_PWM + (dwPidResult / 1000);
+        if(nRightPWM < 9) {
+            nRightPWM = 10;
+            nLeftPWM = 10;
+        }
+    } else {
+        nLeftPWM = LOW_MODE_PWM - (dwPidResult / 1000);
+        nRightPWM = LOW_MODE_PWM + (dwPidResult / 1000);
+        if(nRightPWM < 9) {
+            nRightPWM = 10;
+            nLeftPWM = 10;
+        }
+    }
     m_pWalker->setPWMForLineTrace(nRightPWM, nLeftPWM);
     return eNextState;
 }
@@ -90,8 +116,6 @@ Common::ExecuteState LineTrace::executeTrace(void)
         if(m_pTimer->isTimeout()) {
             /* 高速モード継続時間を超えた */
             m_bHighModeEnd = true;
-            printf("LineTrace: High Speed Mode End\n");
-            printf("duration: %d us\n", m_dwDuration);
         }
     }
     if(!m_bHighModeEnd) {
@@ -109,7 +133,6 @@ Common::ExecuteState LineTrace::Run(void) {
     switch (m_eExecuteState)
     {
     case Common::ExecuteState::Init:
-        printf("LineTrace start\n");
         m_eExecuteState = excuteInitWalk();
         break;
 

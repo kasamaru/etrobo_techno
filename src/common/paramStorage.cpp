@@ -12,7 +12,23 @@ const int ParamStorage::PARAMS3_MAX_NUM = PARAMS3_MAX_NUM;
 ParamStorage::ParamStorage() {
     // 右コース用パラメータ
     m_rightParams[0] = {
-        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (10000 * 1000), 0, 0}
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, 100 * ONE_SECOND_MS, 0, 0 },   
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, 100 * ONE_SECOND_MS, 10, 12 },  
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, 100 * ONE_SECOND_MS, 20, 22 },  
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, 100 * ONE_SECOND_MS, 30, 32 },  
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, 100 * ONE_SECOND_MS, 40, 42 },  
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, 100 * ONE_SECOND_MS, 50, 52 },  
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, 100 * ONE_SECOND_MS, 60, 62 },  
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, 100 * ONE_SECOND_MS, 70, 72 },  
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, 100 * ONE_SECOND_MS, 80, 82 },  
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, 100 * ONE_SECOND_MS, 90, 92 },  
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, 100 * ONE_SECOND_MS, 100, 100 },
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (500* ONE_SECOND_MS), 95, 90 },
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (6000 * ONE_SECOND_MS), 100, 100 },
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1000 * ONE_SECOND_MS), 20, 60 },
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (2900 * ONE_SECOND_MS), 100, 90 },
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1000 * ONE_SECOND_MS), 100, 100 },
+        {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1000 * ONE_SECOND_MS), 20, 60 }
     };
     m_rightParams[1] = {
         {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1.563 * 1000), 0, 0},

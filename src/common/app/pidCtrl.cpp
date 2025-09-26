@@ -55,6 +55,7 @@ SDWORD PidCtrl::Calculate_001(WORD wTarget, WORD wCurrent)
 void PidCtrl::Reset(void)
 {
     m_nIntegral = 0; // 積分値リセット
+    m_nIntegralSum = 0;
     for (int i = 0; i < PID_CTRL_MAX_SIZE; ++i) {
         m_anPrevError[i] = 0; // 前回の誤差リセット
     }
