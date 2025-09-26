@@ -22,6 +22,7 @@ class LineTrace
             WORD wB; /* RGB値Bしきい値 */
         } ST_COLOR_TH;
         LineTrace(Walker* pWalker, LineMonitor* pLineMonitor, Timer* pTimer);
+        void Init(WORD byCourse);
         void SetHighSpeedModeDeadLine(DWORD dwDuration);
         Common::ExecuteState Run(void);
     private:
@@ -33,6 +34,7 @@ class LineTrace
         ST_COLOR_TH m_stColorTh_Min;
         DWORD m_dwDuration; /* 高速モード継続時間 */
         DWORD m_dwStartTime; /* 高速モード開始時間 */
+        WORD wCourse;
         bool m_bHighModeEnd;
         Common::ExecuteState m_eExecuteState;
         Common::ExecuteState executeTrace(void);

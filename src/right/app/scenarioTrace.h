@@ -47,6 +47,7 @@ class ScenarioTrace
         ST_SCENARIO_TRACE_PARAMS m_stParams[MAX_PARAMS];
         Common::ExecuteState m_eExecuteState;
         ST_WORK m_stWork;
+
         void executeInit(void);
         void executeWalking(void);
         Common::ExecuteState getNextState(ExecuteState eSrcState);

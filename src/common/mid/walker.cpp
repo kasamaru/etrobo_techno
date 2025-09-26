@@ -30,7 +30,7 @@ void Walker::setPWMForLineTrace(SWORD nRightPWM, SWORD nLeftPWM) {
  * @brief 前進
  * @note 前進する制限時間は、呼び元で管理すること
  */
-void Walker::runForward(WORD rightPWM, WORD leftPWM) {
+void Walker::runForward(SWORD rightPWM, SWORD leftPWM) {
     mLeftWheel.setPower(leftPWM);
     mRightWheel.setPower(rightPWM);
 }

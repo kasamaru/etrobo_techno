@@ -47,7 +47,6 @@ void ScenarioTrace::RunReady(void)
  */
 Common::ExecuteState ScenarioTrace::Run(void)
 {
-    // printf("Exe %d\n", static_cast<int>(m_eExecuteState));
     switch (m_eExecuteState)
     {
     case Common::ExecuteState::Init:
@@ -94,8 +93,8 @@ Common::ExecuteState ScenarioTrace::getNextState(Common::ExecuteState eSrcState)
             /* タイムアウトしたので、次の状態へ */
             m_stWork.byExeParamsIndex++;
             if(m_stWork.byExeParamsIndex >= m_stWork.byMaxExePrams) {
-                printf("ScenarioEnd\n");
                 /* 登録パラメータ実行完了の場合 */
+                m_pTimer->reset();
                 eNextState = Common::ExecuteState::End;
             } else {
                 eNextState = Common::ExecuteState::Init;
@@ -123,7 +122,6 @@ Common::ExecuteState ScenarioTrace::getNextState(Common::ExecuteState eSrcState)
  */
 void ScenarioTrace::executeInit(void)
 {
-    /* 1パラメータを実行するための初期化 */
     m_pTimer->reset(); // タイマーをリセット
     m_pTimer->start(m_stParams[m_stWork.byExeParamsIndex].dwDuration);
 }
@@ -138,26 +136,17 @@ void ScenarioTrace::executeWalking(void)
     {
         case eCOMMAND_STRAIGHT:
             /* 前進 */
-            printf("Straight:Current RightPWM:%d, Current LeftPWM:%d\n", 
-                m_stParams[m_stWork.byExeParamsIndex].nRightBias, m_stParams[m_stWork.byExeParamsIndex].nLeftBias
-            );
             m_pWalker->runForward(m_stParams[m_stWork.byExeParamsIndex].nRightBias, m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
             break;
 
         case eCOMMAND_LEFT:
             /* 左回転 */
-            printf("LEFT: Current RightPWM:%d, Current LeftPWM:%d\n", 
-                straight_pwm + m_stParams[m_stWork.byExeParamsIndex].nRightBias,
-                straight_pwm - m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
             m_pWalker->runForward(straight_pwm + m_stParams[m_stWork.byExeParamsIndex].nRightBias, 
                                   straight_pwm - m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
             break;
 
         case eCOMMAND_RIGHT:
             /* 右回転 */
-            printf("RIGHT: Current RightPWM:%d, Current LeftPWM:%d\n", 
-                straight_pwm - m_stParams[m_stWork.byExeParamsIndex].nRightBias,
-                straight_pwm + m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
             m_pWalker->runForward(straight_pwm - m_stParams[m_stWork.byExeParamsIndex].nRightBias, 
                                   straight_pwm + m_stParams[m_stWork.byExeParamsIndex].nLeftBias);
             break;

@@ -12,7 +12,7 @@ class Walker {
     public:
         Walker(Motor& leftWheel, Motor& rightWheel);
         void setPWMForLineTrace(SWORD nRightPWM, SWORD nLeftPWM);
-        void runForward(WORD rightPWM, WORD leftPWM);
+        void runForward(SWORD rightPWM, SWORD leftPWM);
         void runBackward(WORD rightPWM, WORD leftPWM);
         void stop(void);
         DWORD getRightSpeed(void);
