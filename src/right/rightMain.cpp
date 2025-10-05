@@ -12,11 +12,11 @@
 #define ONE_SECOND_MS (1000)
 #define ONE_MINUTES (60)
 #define PARAMS1_MAX_NUM (20)
-#define PARAMS2_MAX_NUM (8)
-#define PARAMS3_MAX_NUM (5)
+#define PARAMS2_MAX_NUM (7)
+#define PARAMS3_MAX_NUM (9)
 
 #define HIGH_SPEED_MODE_DURATION_1 (6000 * ONE_SECOND_MS) /* ライントレース1高速モード継続時間 */
-#define HIGH_SPEED_MODE_DURATION_2 (6000 * ONE_SECOND_MS) /* ライントレース2高速モード継続時間 */
+#define HIGH_SPEED_MODE_DURATION_2 (4000 * ONE_SECOND_MS) /* ライントレース2高速モード継続時間 */
 
 #ifdef LEFT_COURSE
 static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams1[PARAMS1_MAX_NUM] ={
@@ -39,7 +39,7 @@ static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams1[PARAMS1_MAX_
     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (500 * ONE_SECOND_MS), 30, 90 },
     /* ここまででターン終了 */
     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (500 * ONE_SECOND_MS), 50, 70 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (2000 * ONE_SECOND_MS), 70, 70 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (2050 * ONE_SECOND_MS), 70, 70 },
     
 };
 
@@ -51,12 +51,13 @@ static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams2[PARAMS3_MAX_
 };
 
 static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astSmartCarryParams1[PARAMS2_MAX_NUM] ={
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (6900 * ONE_SECOND_MS), 0, 10 }, /* 直進1msタスク */
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (100 * ONE_SECOND_MS), 10, 13 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (200 * ONE_SECOND_MS), 20, 23 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (220 * ONE_SECOND_MS), 30, 33 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (7200 * ONE_SECOND_MS), 0, 10 }, /* 直進1msタスク */
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STOP, (1500 * ONE_SECOND_MS), 10, 14 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (400 * ONE_SECOND_MS), 10, 13 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (100 * ONE_SECOND_MS), 20, 23 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (220 * ONE_SECOND_MS), 25, 25 },
     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (5500 * ONE_SECOND_MS), 30, 30 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (5050 * ONE_SECOND_MS), 30, 30 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (4900 * ONE_SECOND_MS), 30, 30 },
 };
 
 #else
@@ -80,23 +81,24 @@ static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams1[PARAMS1_MAX_
     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (500 * ONE_SECOND_MS), 90, 30 },
     /* ここまででターン終了 */
     {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (500 * ONE_SECOND_MS), 70, 50 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (2200 * ONE_SECOND_MS), 70, 70 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (2500 * ONE_SECOND_MS), 70, 70 },
 };
 
 static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astScenarioParams2[PARAMS3_MAX_NUM] = {
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (11000 * ONE_SECOND_MS), -30, -30 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (7450 * ONE_SECOND_MS), 0, 10 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (850 * ONE_SECOND_MS), 30, 30 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (200 * ONE_SECOND_MS), 10, 0 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (2000 * ONE_SECOND_MS), -20, -20 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (2000 * ONE_SECOND_MS), -20, -0 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (10300 * ONE_SECOND_MS), -20, -20 }, /* 直進1msタスク */
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (4000 * ONE_SECOND_MS), 20, 0 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (4000 * ONE_SECOND_MS), 20, 20 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1000 * ONE_SECOND_MS), 20, 0 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (1000 * ONE_SECOND_MS), 20, 20 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (2200 * ONE_SECOND_MS), 20, 0 },
 };
 
 static ScenarioTrace::ST_SCENARIO_TRACE_PARAMS s_astSmartCarryParams1[PARAMS2_MAX_NUM] ={
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (7150 * ONE_SECOND_MS), 10, 0 }, /* 直進1msタスク */
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (220 * ONE_SECOND_MS), 14, 10 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (200 * ONE_SECOND_MS), 24, 20 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (255 * ONE_SECOND_MS), 34, 30 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (5500 * ONE_SECOND_MS), 30, 30 },
-    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (5050 * ONE_SECOND_MS), 30, 30 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (8000 * ONE_SECOND_MS), 20, 10 }, /* 直進1msタスク */
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (11500 * ONE_SECOND_MS), 20, 20 },
+    {ScenarioTrace::E_COMMANDS::eCOMMAND_STRAIGHT, (7200 * ONE_SECOND_MS), 20, 10 },
 };
 #endif
 
@@ -130,7 +132,6 @@ Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSe
         /* 起動時シーケンス */
             if(Common::ExecuteState::End == c_eCurState) {
                 /* 次シーケンスのパラメータ渡し */
-                printf("ScenarioTrace 1 Start.\n");
                 scenarioTraceInit(s_astScenarioParams1, PARAMS1_MAX_NUM);
                 eNextTaskSeq = Common::TaskSeq::SCENARIO_TRACE_1;
             }
@@ -153,7 +154,6 @@ Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSe
         case Common::TaskSeq::LINE_TRACE_1:
             /* ラップゲートを超えてからスマートキャリースタート地点までのライントレース */
             if(Common::ExecuteState::End == c_eCurState) {
-                printf("Start Smart Carry\n");
                 scenarioTraceInit(s_astSmartCarryParams1, PARAMS2_MAX_NUM);
                 eNextTaskSeq = Common::TaskSeq::SMART_CARRY;
             }
@@ -162,7 +162,6 @@ Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSe
         case Common::TaskSeq::SMART_CARRY:
             /* スマートキャリ―スタートから物体をキャリーして円の中に動かすタスク */
             if(Common::ExecuteState::End == c_eCurState) {
-                printf("go back to line\n");
                 scenarioTraceInit(s_astScenarioParams2, PARAMS3_MAX_NUM);
                 eNextTaskSeq = Common::TaskSeq::SCENARIO_TRACE_2;
             }
@@ -171,7 +170,6 @@ Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSe
         case Common::TaskSeq::SCENARIO_TRACE_2:
             /* 円の中からコースラインまで戻るときのシナリオトレース */
             if(Common::ExecuteState::End == c_eCurState) {
-                printf("last part line trace\n");
 #ifdef LEFT_COURSE
                 m_pLineTrace->Init(0);
 #else
@@ -185,7 +183,6 @@ Common::TaskSeq RightCource::checkNextTaskSeq(const Common::TaskSeq c_eCurTaskSe
         case Common::TaskSeq::LINE_TRACE_2:
             /* コースラインを発見してからゴールを超えるまで */
             if(Common::ExecuteState::End == c_eCurState) {
-                printf("GOAL!!!\n");
                 eNextTaskSeq = Common::TaskSeq::END;
             }
             break;
@@ -269,7 +266,6 @@ void RightCource::StopAlwaysTask(void) {
     m_bIsRunning = false;
     m_eExecuteSeq = Common::TaskSeq::END;
     m_pWalker->stop();
-    printf("RightCource: Always Task Stop\n");
 }
 
 Common::ExecuteState RightCource::startedCompare(void) {
