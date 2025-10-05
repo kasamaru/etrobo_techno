@@ -32,7 +32,7 @@ LineTrace::LineTrace(Walker* pWalker, LineMonitor* pLineMonitor, Timer* pTimer) 
 {
     m_pidCtrl = new Caculation::PidCtrl();
     m_pidCtrl->setGains(DEFAULT_KP, DEFAULT_KI, DEFAULT_KD);
-    m_stColorTh_Min = {27, 30, 110}; /* デフォルトは青色検知 */
+    m_stColorTh_Min = {23, 30, 110}; /* デフォルトは青色検知 */
     m_stColorTh_Max = {100, 100, 255};
 
 }
@@ -93,16 +93,24 @@ Common::ExecuteState LineTrace::excuteLowSpeedMode(void)
     if(wCourse == 0) { // 左コース
         nLeftPWM = LOW_MODE_PWM - (dwPidResult / 1000);
         nRightPWM = LOW_MODE_PWM + (dwPidResult / 1000);
-        if(nRightPWM < 9) {
+        if(nRightPWM < 10) {
             nRightPWM = 10;
             nLeftPWM = 10;
+        }
+        if(nLeftPWM < 10) {
+            nLeftPWM = 10;
+            nRightPWM = 10;
         }
     } else {
         nLeftPWM = LOW_MODE_PWM - (dwPidResult / 1000);
         nRightPWM = LOW_MODE_PWM + (dwPidResult / 1000);
-        if(nRightPWM < 9) {
+        if(nRightPWM < 10) {
             nRightPWM = 10;
             nLeftPWM = 10;
+        }
+        if(nLeftPWM < 10) {
+            nLeftPWM = 10;
+            nRightPWM = 10;
         }
     }
     m_pWalker->setPWMForLineTrace(nRightPWM, nLeftPWM);
